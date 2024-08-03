@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using TripGuide.Data;
+
 namespace TripGuide
 {
     public class Program
@@ -8,6 +11,8 @@ namespace TripGuide
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<TripGuideDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("TripGuideDbConnectionString")));
 
             var app = builder.Build();
 
