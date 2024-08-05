@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TripGuide.Models;
 
 namespace TripGuide.Data
 {
-    public class TripGuideDbContext : DbContext
+    public class TripGuideDbContext : IdentityDbContext<User>
     {
         public TripGuideDbContext(DbContextOptions<TripGuideDbContext> options) 
             : base(options)
