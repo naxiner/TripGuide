@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TripGuide.Data;
+using TripGuide.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace TripGuide
 {
@@ -13,6 +15,12 @@ namespace TripGuide
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<TripGuideDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("TripGuideDbConnectionString")));
+            
+            builder.Services.AddDefaultIdentity<User>(options =>
+                options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<TripGuideDbContext>();
+            
+            builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
@@ -27,6 +35,7 @@ namespace TripGuide
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.MapRazorPages();
             app.UseRouting();
 
             app.UseAuthorization();
