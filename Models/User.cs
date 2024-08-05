@@ -1,9 +1,9 @@
-﻿namespace TripGuide.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace TripGuide.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public Guid Id { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
+        // Custom fields can be added in the future
     }
 }
