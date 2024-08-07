@@ -11,7 +11,7 @@ namespace TripGuide.Data
         {
         }
 
-        public DbSet<TouristObject> TouristOjbects { get; set; }
+        public DbSet<TouristObject> TouristObjects { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Review> Reviews { get; set; }
