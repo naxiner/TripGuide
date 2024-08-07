@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TripGuide.Data;
 using TripGuide.Models;
 using Microsoft.AspNetCore.Identity;
+using TripGuide.Repositories;
 
 namespace TripGuide
 {
@@ -21,6 +22,8 @@ namespace TripGuide
                 .AddEntityFrameworkStores<TripGuideDbContext>();
             
             builder.Services.AddRazorPages();
+
+            builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
 
             var app = builder.Build();
 
