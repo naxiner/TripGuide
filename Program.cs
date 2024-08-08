@@ -3,6 +3,8 @@ using TripGuide.Data;
 using TripGuide.Models;
 using Microsoft.AspNetCore.Identity;
 using TripGuide.Repositories;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using TripGuide.Utility;
 
 namespace TripGuide
 {
@@ -17,13 +19,13 @@ namespace TripGuide
             builder.Services.AddDbContext<TripGuideDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("TripGuideDbConnectionString")));
             
-            builder.Services.AddDefaultIdentity<User>(options =>
-                options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<TripGuideDbContext>();
+            builder.Services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<TripGuideDbContext>().AddDefaultTokenProviders();
             
             builder.Services.AddRazorPages();
 
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
@@ -45,7 +47,7 @@ namespace TripGuide
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

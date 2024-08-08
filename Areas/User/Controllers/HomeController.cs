@@ -4,6 +4,7 @@ using TripGuide.Models;
 
 namespace TripGuide.Controllers
 {
+    [Area("User")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
