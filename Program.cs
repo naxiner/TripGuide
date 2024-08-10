@@ -24,6 +24,7 @@ namespace TripGuide
             
             builder.Services.AddRazorPages();
 
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
 
