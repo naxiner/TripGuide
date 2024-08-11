@@ -4,10 +4,10 @@ namespace TripGuide.Repositories
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetAll();
-        User Get(string userId);
-        User Add(User user);
-        User Update(User user);
-        bool Delete(string userId);
+        Task<IEnumerable<User>> GetAllAsync();
+        Task<User> GetAsync(string userId);
+        Task<User> Update(User user);
+        Task<bool> Delete(string userId);
+        Task<IList<string>> GetUserRolesAsync(User user);
     }
 }

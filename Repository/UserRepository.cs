@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TripGuide.Data;
 using TripGuide.Models;
 
@@ -6,48 +7,39 @@ namespace TripGuide.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly TripGuideDbContext _dbContext;
+        private readonly UserManager<User> _userManager;
 
-        public UserRepository(TripGuideDbContext dbContext)
+        public UserRepository(UserManager<User> userManager)
         {
-            _dbContext = dbContext;
+            _userManager = userManager;
         }
         
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return _dbContext.Users.ToList();
+            return await _userManager.Users.ToListAsync();
         }
         
-        public User Get(string userId)
+        public async Task<User> GetAsync(string userId)
         {
-            return _dbContext.Users.FirstOrDefault(to => to.Id == userId);
+            return await _userManager.Users.FirstOrDefaultAsync(to => to.Id == userId);
         }
 
-        public User Add(User user)
+        public async Task<bool> Delete(string userId)
         {
-            _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
+            var user = await _userManager.FindByIdAsync(userId);
 
-            return user;
-        }
-
-        public bool Delete(string userId)
-        {
-            var existingUser = _dbContext.Users.Find(userId);
-
-            if (existingUser != null)
+            if (user != null)
             {
-                _dbContext.Users.Remove(existingUser);
-                _dbContext.SaveChanges();
-                return true;
+                var result = await _userManager.DeleteAsync(user);
+                return result.Succeeded;
             }
 
             return false;
         }
 
-        public User Update(User user)
+        public async Task<User> Update(User user)
         {
-            var existingUser = _dbContext.Users.Find(user.Id);
+            var existingUser = await _userManager.FindByIdAsync(user.Id);
 
             if (existingUser != null)
             {
@@ -57,10 +49,19 @@ namespace TripGuide.Repositories
                 existingUser.NormalizedEmail = user.NormalizedEmail;
                 existingUser.PhoneNumber = user.PhoneNumber;
 
-                _dbContext.SaveChanges();
+                var result = await _userManager.UpdateAsync(existingUser);
+                if (result.Succeeded)
+                {
+                    return existingUser;
+                }
             }
 
-            return existingUser;
+            return null;
+        }
+
+        public async Task<IList<string>> GetUserRolesAsync(User user)
+        {
+            return await _userManager.GetRolesAsync(user);
         }
     }
 }
