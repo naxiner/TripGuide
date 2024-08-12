@@ -177,7 +177,14 @@ namespace TripGuide.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if (User.IsInRole(StaticDetail.Role_Admin))
+                        {
+                            return RedirectToAction("Index", "User", new { area = "Admin" });
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
                         return LocalRedirect(returnUrl);
                     }
                 }
