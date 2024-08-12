@@ -8,10 +8,12 @@ namespace TripGuide.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserRepository(UserManager<User> userManager)
+        public UserRepository(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
         
         public async Task<IEnumerable<User>> GetAllAsync()
@@ -24,7 +26,7 @@ namespace TripGuide.Repositories
             return await _userManager.Users.FirstOrDefaultAsync(to => to.Id == userId);
         }
 
-        public async Task<bool> Delete(string userId)
+        public async Task<bool> DeleteAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -37,7 +39,7 @@ namespace TripGuide.Repositories
             return false;
         }
 
-        public async Task<User> Update(User user)
+        public async Task<User> UpdateAsync(User user)
         {
             var existingUser = await _userManager.FindByIdAsync(user.Id);
 
@@ -58,10 +60,25 @@ namespace TripGuide.Repositories
 
             return null;
         }
+        
+        public async Task<IList<string>> GetAllRolesAsync()
+        {
+            return await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+        }
 
         public async Task<IList<string>> GetUserRolesAsync(User user)
         {
             return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<IdentityResult> AddToRolesAsync(User user, IEnumerable<string> roles)
+        {
+            return await _userManager.AddToRolesAsync(user, roles);
+        }
+
+        public async Task<IdentityResult> RemoveFromRolesAsync(User user, IEnumerable<string> roles)
+        {
+            return await _userManager.RemoveFromRolesAsync(user, roles);
         }
     }
 }
