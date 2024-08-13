@@ -1,0 +1,53 @@
+﻿@model IEnumerable<UserRolesViewModel>
+
+<div>
+    <div class="bg-secondary bg-opacity-10 py-2 mb-5">
+        <div class="container">
+            <h1>Users</h1>
+        </div>
+    </div>
+    <div>
+        <div class="pb-3">
+            <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">
+                Create User
+            </a>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <td>Id</td>
+                    <td>Role</td>
+                    <td>UserName</td>
+                    <td>Email</td>
+                    <td>Phone</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.UserId</td>
+                        <td>@string.Join(", ", user.Roles)</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>
+                            <div>
+                                <a asp-controller="User" asp-action="Update" asp-route-id="@user.UserId" class="btn btn-primary">
+                                    Edit
+                                </a>
+                                <form asp-controller="User" asp-action="Delete" asp-route-id="@user.UserId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
