@@ -18,7 +18,7 @@ namespace TripGuide
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<TripGuideDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("TripGuideDbConnectionString")));
-            
+
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<TripGuideDbContext>().AddDefaultTokenProviders();
             

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TripGuide.Data;
 
@@ -11,9 +12,11 @@ using TripGuide.Data;
 namespace TripGuide.Migrations
 {
     [DbContext(typeof(TripGuideDbContext))]
-    partial class TripGuideDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240810151018_Add-link-on-Tourist-object")]
+    partial class AddlinkonTouristobject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,6 +175,9 @@ namespace TripGuide.Migrations
                     b.Property<string>("FeaturedImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PageTitle")
                         .IsRequired()
