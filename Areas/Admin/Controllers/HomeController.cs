@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TripGuide.Models;
 
-namespace TripGuide.Areas.Admin.Controllers
+namespace TripGuide.Controllers
 {
     public class HomeController : Controller
     {

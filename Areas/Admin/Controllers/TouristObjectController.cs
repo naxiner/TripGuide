@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TripGuide.Models;
 using TripGuide.Repositories;
 
-namespace TripGuide.Areas.Admin.Controllers
+namespace TripGuide.Controllers
 {
     public class TouristObjectController : Controller
     {
