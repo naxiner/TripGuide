@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TripGuide.Repository;
+using TripGuide.Utility;
 
 namespace TripGuide.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Area("Admin")]
+    [Authorize(Roles = (StaticDetail.Role_Admin + "," + StaticDetail.Role_Moderator))]
     public class ImageController : Controller
     {
         private readonly IImageRepository imageRepository;

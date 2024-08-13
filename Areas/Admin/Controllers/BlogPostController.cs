@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TripGuide.Data;
 using TripGuide.Models;
 using TripGuide.Repositories;
 using TripGuide.Repository;
+using TripGuide.Utility;
 
 namespace TripGuide.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = (StaticDetail.Role_Admin + "," + StaticDetail.Role_Moderator))]
     public class BlogPostController : Controller
     {
         private readonly IBlogPostRepository blogPostRepository;

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using TripGuide.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TripGuide.Utility;
+using TripGuide.Repository;
 
 namespace TripGuide
 {
@@ -26,6 +27,8 @@ namespace TripGuide
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
+            builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IImageRepository, ImageRepository>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             var app = builder.Build();
