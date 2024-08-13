@@ -6,7 +6,7 @@ using TripGuide.Models;
 using TripGuide.Repositories;
 using TripGuide.Repository;
 
-namespace TripGuide.Controllers
+namespace TripGuide.Areas.Admin.Controllers
 {
     public class BlogPostController : Controller
     {

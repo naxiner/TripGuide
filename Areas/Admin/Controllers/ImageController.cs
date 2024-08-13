@@ -2,7 +2,7 @@
 using System.Net;
 using TripGuide.Repository;
 
-namespace TripGuide.Controllers
+namespace TripGuide.Areas.Admin.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
