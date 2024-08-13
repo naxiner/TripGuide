@@ -3,6 +3,7 @@ using TripGuide.Data;
 using TripGuide.Models;
 using Microsoft.AspNetCore.Identity;
 using TripGuide.Repositories;
+using TripGuide.Repository;
 
 namespace TripGuide
 {
@@ -24,6 +25,8 @@ namespace TripGuide
             builder.Services.AddRazorPages();
 
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
+            builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
             var app = builder.Build();
 

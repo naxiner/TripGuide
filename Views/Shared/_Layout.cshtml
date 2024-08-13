@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TripGuide.styles.css" asp-append-version="true" />
+
+    <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet' type='text/css' />
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
 </head>
 <body>
     <header>
@@ -28,7 +31,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                aria-expanded="false" id="navbarDropdownAdmin">
-                                Admin
+                                Tourist Objects
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
                                 <li>
@@ -36,6 +39,21 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-controller="TouristObject" asp-action="List">Tourist Objects</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false" id="navbarDropdownAdmin">
+                                Blog Posts
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="BlogPost" asp-action="Create">Add Blog Post</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="BlogPost" asp-action="List">Blog Post</a>
                                 </li>
                             </ul>
                         </li>

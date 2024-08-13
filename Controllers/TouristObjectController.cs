@@ -115,5 +115,16 @@ namespace TripGuide.Controllers
                 ModelState.AddModelError("TouristObject.OpeningTime", "Opening time cannot be later than closing time.");
             }
         }
+
+        [HttpGet("api/touristobject/{id}")]
+        public IActionResult GetTouristObject(Guid id)
+        {
+            var touristObject = _touristObjectRepository.Get(id);
+            if (touristObject == null)
+            {
+                return NotFound();
+            }
+            return Json(touristObject);
+        }
     }
 }
