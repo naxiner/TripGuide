@@ -7,7 +7,7 @@ using TripGuide.Utility;
 namespace TripGuide.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = (StaticDetail.Role_Admin + "," + StaticDetail.Role_Moderator))]
+    [Authorize(Roles=(StaticDetail.Role_Admin + "," + StaticDetail.Role_Moderator))]
     public class TouristObjectController : Controller
     {
         private readonly ITouristObjectRepository _touristObjectRepository;
