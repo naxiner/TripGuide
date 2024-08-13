@@ -21,7 +21,7 @@ namespace TripGuide
 
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<TripGuideDbContext>().AddDefaultTokenProviders();
-
+            
             builder.Services.AddRazorPages();
 
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
