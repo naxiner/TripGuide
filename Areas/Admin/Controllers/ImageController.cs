@@ -8,8 +8,6 @@ namespace TripGuide.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Area("Admin")]
-    [Authorize(Roles = (StaticDetail.Role_Admin + "," + StaticDetail.Role_Moderator))]
     public class ImageController : Controller
     {
         private readonly IImageRepository imageRepository;

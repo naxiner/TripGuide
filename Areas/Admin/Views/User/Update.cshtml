@@ -23,8 +23,20 @@
             </div>
             <div class="mb-3">
                 <label asp-for="PhoneNumber" class="form-label">Phone</label>
-                <input type="text" class="form-control" id="phonenumber" asp-for="PhoneNumber" required>
+                <input type="text" class="form-control" id="phonenumber" asp-for="PhoneNumber">
                 <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+            </div>
+            <div class="mb-3">
+                <div>
+                    <label asp-for="AvatarImage" class="form-label">Avatar</label>
+                </div>
+                <div class="mb-3">
+                    <img src="@Model.AvatarImageUrl" id="featuredImageDisplay" style="width:256px" />
+                </div>
+                <input type="text" hidden class="form-control" id="avatarImageUrl" asp-for="AvatarImageUrl">
+                <div>
+                    <input type="file" id="avatarImage" name="AvatarImage" asp-for="AvatarImageUrl">
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Role</label>
@@ -43,3 +55,34 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const avatarImageElement = document.getElementById('avatarImage');
+        const avatarImageUrl = document.getElementById('avatarImageUrl');
+        const avatarImageDisplay = document.getElementById('avatarImageDisplay');
+
+        async function uploadAvatarImage(e) {
+            console.log(e.target.files[0]);
+
+            let data = new FormData();
+            data.append('file', e.target.files[0]);
+
+            await fetch('/api/image', {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                },
+                body: data
+            }).then(response => response.json())
+                .then(result => {
+                    avatarImageUrl.value = result.link;
+                    avatarImageDisplay.style.display = 'block';
+                    avatarImageDisplay.src = result.link;
+                });
+        }
+
+        avatarImageElement.addEventListener('change', uploadAvatarImage);
+    </script>
+}

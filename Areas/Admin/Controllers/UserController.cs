@@ -64,6 +64,7 @@ namespace TripGuide.Areas.Admin.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                AvatarImageUrl = user.AvatarImageUrl,
                 Roles = role,
                 AllRoles = allRoles
             };
@@ -101,6 +102,7 @@ namespace TripGuide.Areas.Admin.Controllers
                 user.UserName = userRolesVM.UserName;
                 user.Email = userRolesVM.Email;
                 user.PhoneNumber = userRolesVM.PhoneNumber;
+                user.AvatarImageUrl = userRolesVM.AvatarImageUrl;
 
                 await _userRepository.UpdateAsync(user);
 
