@@ -33,6 +33,10 @@ namespace TripGuide.Areas.Identity.Pages.Account.Manage
         [TempData]
         public string StatusMessage { get; set; }
 
+        [Display(Name = "AvatarImage")]
+        public string AvatarImage { get; set; }
+
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -57,17 +61,22 @@ namespace TripGuide.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "AvatarImageUrl")]
+            public string AvatarImageUrl { get; set; }
         }
 
         private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var avatarImageUrl = user.AvatarImageUrl;
 
             Input = new InputModel
             {
                 Username = userName,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                AvatarImageUrl = avatarImageUrl
             };
         }
 
@@ -117,6 +126,12 @@ namespace TripGuide.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+
+            if (Input.AvatarImageUrl != user.AvatarImageUrl)
+            {
+                user.AvatarImageUrl = Input.AvatarImageUrl;
+                await _userManager.UpdateAsync(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);
