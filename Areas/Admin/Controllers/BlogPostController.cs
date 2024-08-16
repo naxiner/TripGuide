@@ -100,6 +100,7 @@ namespace TripGuide.Controllers
                 existingBlogPost.Content = updatedBlogPost.Content;
                 existingBlogPost.ShortDescription = updatedBlogPost.ShortDescription;
                 existingBlogPost.UrlHandle = updatedBlogPost.UrlHandle;
+                existingBlogPost.FeaturedImageUrl = updatedBlogPost.FeaturedImageUrl;
                 existingBlogPost.PublishedDate = updatedBlogPost.PublishedDate;
                 existingBlogPost.UserId = updatedBlogPost.UserId;
                 existingBlogPost.TouristObjectId = updatedBlogPost.TouristObjectId;
