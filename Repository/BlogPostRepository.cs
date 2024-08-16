@@ -46,11 +46,7 @@ namespace TripGuide.Repositories
 
         public IEnumerable<BlogPost> GetAll()
         {
-            return _dbContext.BlogPosts
-                .Include(bp => bp.Tags)
-                .Include(bp => bp.Reviews)
-                .Include(bp => bp.TouristObject)
-                .ToList();
+            return _dbContext.BlogPosts?.ToList() ?? new List<BlogPost>();
         }
 
         public BlogPost Update(BlogPost blogPost)
@@ -79,6 +75,15 @@ namespace TripGuide.Repositories
         public IEnumerable<TouristObject> GetAllTouristObjects()
         {
             return _dbContext.TouristObjects.ToList() ?? new List<TouristObject>();
+        }
+
+        public BlogPost GetByUrl(string urlHandle)
+        {
+            return _dbContext.BlogPosts
+                .Include(bp => bp.Tags)
+                .Include(bp => bp.Reviews)
+                .Include(bp => bp.TouristObject)
+                .FirstOrDefault(bp => bp.UrlHandle == urlHandle);
         }
     }
 }
