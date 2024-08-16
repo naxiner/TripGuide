@@ -49,6 +49,7 @@ namespace TripGuide.Repositories
                 existingUser.NormalizedUserName = user.NormalizedUserName;
                 existingUser.Email = user.Email;
                 existingUser.NormalizedEmail = user.NormalizedEmail;
+                existingUser.AvatarImageUrl = user.AvatarImageUrl;
                 existingUser.PhoneNumber = user.PhoneNumber;
 
                 var result = await _userManager.UpdateAsync(existingUser);
