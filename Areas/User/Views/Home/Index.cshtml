@@ -1,8 +1,52 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model IEnumerable<BlogPost>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-5 py-5">
+        <div class="col-12 col-lg-6">
+            <h1 class="display-5 fw-bold lh-1 mb-3">
+                Trip Guide: Your Adventure, Your Way!
+            </h1>
+            <p class="lead">
+                Discover hidden gems and iconic landmarks all in one place. 
+                Save your favorite spots and routes to create a personalized travel experience. 
+                Let your journey begin with Trip Guide!
+            </p>
+        </div>
+        <div class="col-12 col-lg-6">
+            <img src="https://res.cloudinary.com/dyhivdtqr/image/upload/v1723800767/bddkd3id9p3cp4klvhr9.png"
+                 class="d-block mx-lg-auto img-fluid" width="400" />
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+
+            <h2 class="mb-5 display-3">Blogs</h2>
+
+            @if (Model != null && Model.Any())
+            {
+                foreach (var blog in Model)
+                {
+                    <div class="mb-5 bg-light box-shadow">
+                        <img src="@blog.FeaturedImageUrl" alt="@blog.PageTitle" class="mb-2 d-block img-fluid" />
+                        <div class="px-4 py-4">
+                            <h2 class="mb-2">@blog.PageTitle</h2>
+                            <p>Date Published: @blog.PublishedDate.ToShortDateString()</p>
+                            <p class="mb-2">@blog.ShortDescription</p>
+                            <a href="/blog/@blog.UrlHandle" class="btn btn-dark">Read More</a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No blog posts available.</p>
+            }
+        </div>
+    </div>
 </div>
