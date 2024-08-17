@@ -41,6 +41,7 @@ namespace TripGuide.Areas.Admin.Controllers
                     UserName = user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
+                    IsBanned = user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow,
                     Roles = roles
                 });
             }
@@ -122,6 +123,13 @@ namespace TripGuide.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LockUnlock(string id, string banDuration)
+        {
+            var result = await _userRepository.LockUnlock(id, banDuration);
             return RedirectToAction("Index");
         }
     }
