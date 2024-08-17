@@ -84,6 +84,11 @@ namespace TripGuide.Controllers
                 return NotFound();
             }
 
+            if (blogPost.Tags != null)
+            {
+                Tags = string.Join(',', blogPost.Tags.Select(x => x.Name));
+            }
+
             ViewBag.TouristObjects = blogPostRepository.GetAllTouristObjects();
 
             return View(blogPost);
@@ -108,8 +113,9 @@ namespace TripGuide.Controllers
                 existingBlogPost.PublishedDate = updatedBlogPost.PublishedDate;
                 existingBlogPost.UserId = updatedBlogPost.UserId;
                 existingBlogPost.TouristObjectId = updatedBlogPost.TouristObjectId;
-                existingBlogPost.Tags = updatedBlogPost.Tags;
                 existingBlogPost.Reviews = updatedBlogPost.Reviews;
+
+                existingBlogPost.Tags = Tags.Split(',').Select(x => new Tag() { Name = x.Trim() }).ToList();
 
                 blogPostRepository.Update(existingBlogPost);
 
