@@ -100,6 +100,7 @@
             <div class="mb-3">
                 <label for="tags" class="form-label">Tags (comma separated)</label>
                 <input type="text" id="tags" class="form-control" asp-for="Tags" value="@string.Join(", ", @Model.Tags.Select(t => t.Name))" />
+                <span class="text-danger" asp-validation-for="Tags"></span>
             </div>
 
 

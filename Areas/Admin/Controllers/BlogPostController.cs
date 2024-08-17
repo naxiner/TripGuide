@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Security.Claims;
 using TripGuide.Data;
 using TripGuide.Models;
@@ -51,6 +52,13 @@ namespace TripGuide.Controllers
         [HttpPost]
         public IActionResult Add()
         {
+            var tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+
+            if (tagList.Count > 10)
+            {
+                ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+            }
+
             if (ModelState.IsValid)
             {
                 var blogPost = new BlogPost()
@@ -63,7 +71,7 @@ namespace TripGuide.Controllers
                     PublishedDate = BlogPost.PublishedDate,
                     UserId = BlogPost.UserId,
                     TouristObjectId = BlogPost.TouristObjectId,
-                    Tags = new List<Tag>(Tags.Split(',').Select(x => new Tag() { Name = x.Trim() }))
+                    Tags = tagList.Select(x => new Tag() { Name = x }).ToList()
                 };
                 blogPostRepository.Add(blogPost);
 
@@ -97,6 +105,13 @@ namespace TripGuide.Controllers
         [HttpPost]
         public IActionResult Update(Guid id, BlogPost updatedBlogPost)
         {
+            var tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+
+            if (tagList.Count > 10)
+            {
+                ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+            }
+
             if (ModelState.IsValid)
             {
                 var existingBlogPost = blogPostRepository.Get(id);
@@ -115,7 +130,7 @@ namespace TripGuide.Controllers
                 existingBlogPost.TouristObjectId = updatedBlogPost.TouristObjectId;
                 existingBlogPost.Reviews = updatedBlogPost.Reviews;
 
-                existingBlogPost.Tags = Tags.Split(',').Select(x => new Tag() { Name = x.Trim() }).ToList();
+                existingBlogPost.Tags = tagList.Select(x => new Tag() { Name = x }).ToList();
 
                 blogPostRepository.Update(existingBlogPost);
 
