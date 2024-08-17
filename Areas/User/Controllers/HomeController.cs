@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TripGuide.Models;
+using TripGuide.Models.ViewModels;
 using TripGuide.Repositories;
 
 namespace TripGuide.Controllers
@@ -10,19 +11,29 @@ namespace TripGuide.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IBlogPostRepository blogPostRepository;
+        private readonly ITagRepository tagRepository;
 
-        public IEnumerable<BlogPost> Blogs { get; set; }
+        public List<BlogPost> Blogs { get; set; }
 
-        public HomeController(ILogger<HomeController> logger, IBlogPostRepository blogPostRepository)
+        [BindProperty]
+        public List<Tag> Tags { get; set; }
+
+        public HomeController(ILogger<HomeController> logger, IBlogPostRepository blogPostRepository, ITagRepository tagRepository)
         {
             _logger = logger;
             this.blogPostRepository = blogPostRepository;
+            this.tagRepository = tagRepository;
         }
 
         public IActionResult Index()
         {
-            var blogs = blogPostRepository.GetAll();
-            return View(blogs);
+            var viewModel = new HomeViewModel
+            {
+                Blogs = blogPostRepository.GetAll().ToList(),
+                Tags = tagRepository.GetAll().ToList()
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult Privacy()

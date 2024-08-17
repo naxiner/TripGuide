@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Security.Claims;
 using TripGuide.Data;
 using TripGuide.Models;
@@ -25,6 +26,9 @@ namespace TripGuide.Controllers
         [BindProperty]
         public IFormFile? FeaturedImage { get; set; }
 
+        [BindProperty]
+        public string Tags { get; set; }
+
         public BlogPostController(IBlogPostRepository blogPostRepository, IImageRepository imageRepository, ITouristObjectRepository touristObjectRepository, TripGuideDbContext context)
         {
             this.blogPostRepository = blogPostRepository;
@@ -48,6 +52,13 @@ namespace TripGuide.Controllers
         [HttpPost]
         public IActionResult Add()
         {
+            var tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+
+            if (tagList.Count > 10)
+            {
+                ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+            }
+
             if (ModelState.IsValid)
             {
                 var blogPost = new BlogPost()
@@ -60,10 +71,11 @@ namespace TripGuide.Controllers
                     PublishedDate = BlogPost.PublishedDate,
                     UserId = BlogPost.UserId,
                     TouristObjectId = BlogPost.TouristObjectId,
+                    Tags = tagList.Select(x => new Tag() { Name = x }).ToList()
                 };
                 blogPostRepository.Add(blogPost);
 
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             ViewBag.TouristObjects = touristObjectRepository.GetAll();
@@ -80,6 +92,11 @@ namespace TripGuide.Controllers
                 return NotFound();
             }
 
+            if (blogPost.Tags != null)
+            {
+                Tags = string.Join(',', blogPost.Tags.Select(x => x.Name));
+            }
+
             ViewBag.TouristObjects = blogPostRepository.GetAllTouristObjects();
 
             return View(blogPost);
@@ -88,6 +105,13 @@ namespace TripGuide.Controllers
         [HttpPost]
         public IActionResult Update(Guid id, BlogPost updatedBlogPost)
         {
+            var tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+
+            if (tagList.Count > 10)
+            {
+                ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+            }
+
             if (ModelState.IsValid)
             {
                 var existingBlogPost = blogPostRepository.Get(id);
@@ -104,8 +128,9 @@ namespace TripGuide.Controllers
                 existingBlogPost.PublishedDate = updatedBlogPost.PublishedDate;
                 existingBlogPost.UserId = updatedBlogPost.UserId;
                 existingBlogPost.TouristObjectId = updatedBlogPost.TouristObjectId;
-                existingBlogPost.Tags = updatedBlogPost.Tags;
                 existingBlogPost.Reviews = updatedBlogPost.Reviews;
+
+                existingBlogPost.Tags = tagList.Select(x => new Tag() { Name = x }).ToList();
 
                 blogPostRepository.Update(existingBlogPost);
 

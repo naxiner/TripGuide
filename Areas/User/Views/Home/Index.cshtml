@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@model IEnumerable<BlogPost>
+@model TripGuide.Models.ViewModels.HomeViewModel
 
 <div class="container col-xxl-8 px-4 py-5">
     <div class="row align-items-center g-5 py-5">
@@ -10,8 +10,8 @@
                 Trip Guide: Your Adventure, Your Way!
             </h1>
             <p class="lead">
-                Discover hidden gems and iconic landmarks all in one place. 
-                Save your favorite spots and routes to create a personalized travel experience. 
+                Discover hidden gems and iconic landmarks all in one place.
+                Save your favorite spots and routes to create a personalized travel experience.
                 Let your journey begin with Trip Guide!
             </p>
         </div>
@@ -25,12 +25,11 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-6">
-
             <h2 class="mb-5 display-3">Blogs</h2>
 
-            @if (Model != null && Model.Any())
+            @if (Model.Blogs != null && Model.Blogs.Any())
             {
-                foreach (var blog in Model)
+                foreach (var blog in Model.Blogs)
                 {
                     <div class="mb-5 bg-light box-shadow">
                         <img src="@blog.FeaturedImageUrl" alt="@blog.PageTitle" class="mb-2 d-block img-fluid" />
@@ -38,6 +37,33 @@
                             <h2 class="mb-2">@blog.PageTitle</h2>
                             <p>Date Published: @blog.PublishedDate.ToShortDateString()</p>
                             <p class="mb-2">@blog.ShortDescription</p>
+
+                            <div class="mb-3">
+                                @if (blog.Tags != null && blog.Tags.Any())
+                                {
+                                    var tagList = blog.Tags.ToList();
+                                    <div id="tags-@blog.Id">
+                                        @for (int i = 0; i < tagList.Count; i++)
+                                        {
+                                            if (i < 5)
+                                            {
+                                                <span class="badge bg-dark">@tagList[i].Name</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-dark d-none more-tag-@blog.Id">@tagList[i].Name</span>
+                                            }
+                                        }
+                                    </div>
+
+                                    @if (tagList.Count > 5)
+                                    {
+                                        <button type="button" class="btn btn-link p-0" onclick="showMoreTags('@blog.Id')">Show More</button>
+                                        <button type="button" class="btn btn-link p-0 d-none" id="collapse-button-@blog.Id" onclick="showLessTags('@blog.Id')">Show Less</button>
+                                    }
+                                }
+                            </div>
+
                             <a href="/blog/@blog.UrlHandle" class="btn btn-dark">Read More</a>
                         </div>
                     </div>
@@ -50,3 +76,28 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function showMoreTags(blogId) {
+            const moreTags = document.querySelectorAll(`.more-tag-${blogId}`);
+            moreTags.forEach(tag => {
+                tag.classList.remove('d-none');
+            });
+
+            document.querySelector(`#collapse-button-${blogId}`).classList.remove('d-none');
+            const button = event.target;
+            button.classList.add('d-none');
+        }
+
+        function showLessTags(blogId) {
+            const moreTags = document.querySelectorAll(`.more-tag-${blogId}`);
+            moreTags.forEach(tag => {
+                tag.classList.add('d-none');
+            });
+
+            document.querySelector(`#collapse-button-${blogId}`).classList.add('d-none');
+            document.querySelector(`.btn-link.p-0[onclick="showMoreTags('${blogId}')"]`).classList.remove('d-none');
+        }
+    </script>
+}

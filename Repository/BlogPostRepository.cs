@@ -41,12 +41,15 @@ namespace TripGuide.Repositories
                 .Include(bp => bp.Tags)
                 .Include(bp => bp.Reviews)
                 .Include(bp => bp.TouristObject)
+                .Include(nameof(BlogPost.Tags))
                 .FirstOrDefault(bp => bp.Id == id);
         }
 
         public IEnumerable<BlogPost> GetAll()
         {
-            return _dbContext.BlogPosts?.ToList() ?? new List<BlogPost>();
+            return _dbContext.BlogPosts
+            .Include(nameof(BlogPost.Tags))
+            .ToList();
         }
 
         public BlogPost Update(BlogPost blogPost)
@@ -63,7 +66,15 @@ namespace TripGuide.Repositories
                 existingBlogPost.PublishedDate = blogPost.PublishedDate;
                 existingBlogPost.UserId = blogPost.UserId;
                 existingBlogPost.TouristObject = blogPost.TouristObject;
-                existingBlogPost.Tags = blogPost.Tags;
+
+                if (blogPost.Tags != null && blogPost.Tags.Any())
+                {
+                    _dbContext.Tags.RemoveRange(existingBlogPost.Tags);
+
+                    blogPost.Tags.ToList().ForEach(x => x.BlogPostId = existingBlogPost.Id);
+                    _dbContext.Tags.AddRange(blogPost.Tags);
+                }
+
                 existingBlogPost.Reviews = blogPost.Reviews;
 
                 _dbContext.SaveChanges();
@@ -83,6 +94,7 @@ namespace TripGuide.Repositories
                 .Include(bp => bp.Tags)
                 .Include(bp => bp.Reviews)
                 .Include(bp => bp.TouristObject)
+                .Include(nameof(BlogPost.Tags))
                 .FirstOrDefault(bp => bp.UrlHandle == urlHandle);
         }
     }
