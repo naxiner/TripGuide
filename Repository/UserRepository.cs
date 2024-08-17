@@ -81,5 +81,44 @@ namespace TripGuide.Repositories
         {
             return await _userManager.RemoveFromRolesAsync(user, roles);
         }
+
+        public async Task<User> LockUnlock(string userId, string banDuration)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            DateTime lockoutEndDate;
+
+            switch (banDuration)
+            {
+                case "Unban":
+                    lockoutEndDate = DateTime.UtcNow;
+                    break;
+                case "Day":
+                    lockoutEndDate = DateTime.UtcNow.AddDays(1);
+                    break;
+                case "Week":
+                    lockoutEndDate = DateTime.UtcNow.AddDays(7);
+                    break;
+                case "Month":
+                    lockoutEndDate = DateTime.UtcNow.AddMonths(1);
+                    break;
+                case "Year":
+                    lockoutEndDate = DateTime.UtcNow.AddYears(1);
+                    break;
+                case "Forever":
+                    lockoutEndDate = DateTime.UtcNow.AddYears(1000);
+                    break;
+                default:
+                    lockoutEndDate = DateTime.UtcNow;
+                    break;
+            }
+            await _userManager.SetLockoutEndDateAsync(user, lockoutEndDate);
+
+            return user;
+        }
     }
 }
