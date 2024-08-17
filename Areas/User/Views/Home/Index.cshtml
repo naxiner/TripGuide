@@ -41,9 +41,25 @@
                             <div class="mb-3">
                                 @if (blog.Tags != null && blog.Tags.Any())
                                 {
-                                    foreach (var tag in blog.Tags)
+                                    var tagList = blog.Tags.ToList();
+                                    <div id="tags-@blog.Id">
+                                        @for (int i = 0; i < tagList.Count; i++)
+                                        {
+                                            if (i < 5)
+                                            {
+                                                <span class="badge bg-dark">@tagList[i].Name</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-dark d-none more-tag-@blog.Id">@tagList[i].Name</span>
+                                            }
+                                        }
+                                    </div>
+
+                                    @if (tagList.Count > 5)
                                     {
-                                        <span class="badge bg-dark">@tag.Name</span>
+                                        <button type="button" class="btn btn-link p-0" onclick="showMoreTags('@blog.Id')">Show More</button>
+                                        <button type="button" class="btn btn-link p-0 d-none" id="collapse-button-@blog.Id" onclick="showLessTags('@blog.Id')">Show Less</button>
                                     }
                                 }
                             </div>
@@ -60,3 +76,28 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function showMoreTags(blogId) {
+            const moreTags = document.querySelectorAll(`.more-tag-${blogId}`);
+            moreTags.forEach(tag => {
+                tag.classList.remove('d-none');
+            });
+
+            document.querySelector(`#collapse-button-${blogId}`).classList.remove('d-none');
+            const button = event.target;
+            button.classList.add('d-none');
+        }
+
+        function showLessTags(blogId) {
+            const moreTags = document.querySelectorAll(`.more-tag-${blogId}`);
+            moreTags.forEach(tag => {
+                tag.classList.add('d-none');
+            });
+
+            document.querySelector(`#collapse-button-${blogId}`).classList.add('d-none');
+            document.querySelector(`.btn-link.p-0[onclick="showMoreTags('${blogId}')"]`).classList.remove('d-none');
+        }
+    </script>
+}
