@@ -25,6 +25,9 @@ namespace TripGuide.Controllers
         [BindProperty]
         public IFormFile? FeaturedImage { get; set; }
 
+        [BindProperty]
+        public string Tags { get; set; }
+
         public BlogPostController(IBlogPostRepository blogPostRepository, IImageRepository imageRepository, ITouristObjectRepository touristObjectRepository, TripGuideDbContext context)
         {
             this.blogPostRepository = blogPostRepository;
@@ -60,10 +63,11 @@ namespace TripGuide.Controllers
                     PublishedDate = BlogPost.PublishedDate,
                     UserId = BlogPost.UserId,
                     TouristObjectId = BlogPost.TouristObjectId,
+                    Tags = new List<Tag>(Tags.Split(',').Select(x => new Tag() { Name = x.Trim() }))
                 };
                 blogPostRepository.Add(blogPost);
 
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             ViewBag.TouristObjects = touristObjectRepository.GetAll();
