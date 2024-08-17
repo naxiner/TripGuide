@@ -98,6 +98,12 @@
             </div>
 
             <div class="mb-3">
+                <label for="tags" class="form-label">Tags (comma separated)</label>
+                <input type="text" id="tags" class="form-control" asp-for="Tags" value="@string.Join(", ", @Model.Tags.Select(t => t.Name))" />
+            </div>
+
+
+            <div class="mb-3">
                 <button class="btn btn-primary" type="submit">Update</button>
             </div>
         </form>
