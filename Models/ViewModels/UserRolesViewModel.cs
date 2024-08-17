@@ -10,5 +10,6 @@
         public string? AvatarImageUrl { get; set; }
         public IList<string> Roles { get; set; } = new List<string>();
         public IList<string> AllRoles { get; set; } = new List<string>();
+        public bool IsBanned { get; set; }
     }
 }
