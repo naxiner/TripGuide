@@ -85,6 +85,12 @@
             </div>
 
             <div class="mb-3">
+                <label for="tags" class="form-label">Tags (comma separated)</label>
+                <input type="text" class="form-control" id="tags" asp-for="Tags" />
+                <span class="text-danger" asp-validation-for="Tags"></span>
+            </div>
+
+            <div class="mb-3">
                 <button class="btn btn-primary" type="submit">Submit</button>
             </div>
         </form>
