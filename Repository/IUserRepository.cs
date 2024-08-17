@@ -13,5 +13,6 @@ namespace TripGuide.Repositories
         Task<IList<string>> GetUserRolesAsync(User user);
         Task<IdentityResult> AddToRolesAsync(User user, IEnumerable<string> roles);
         Task<IdentityResult> RemoveFromRolesAsync(User user, IEnumerable<string> roles);
+        Task<User> LockUnlock(string userId, string banDuration);
     }
 }
