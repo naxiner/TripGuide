@@ -111,5 +111,52 @@ namespace TripGuide.Controllers
             return RedirectToAction("BlogDetails", new { urlHandle = urlHandle });
         }
 
+        [HttpPost]
+        [Area("User")]
+        [Route("blog/{urlHandle}/edit-review")]
+        public IActionResult EditReview(string urlHandle, Review review)
+        {
+            var existingReview = _reviewRepository.GetById(review.Id);
+            if (existingReview == null)
+            {
+                return NotFound();
+            }
+
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null || user.Id != existingReview.UserId)
+            {
+                return Unauthorized();
+            }
+
+            existingReview.Content = review.Content;
+            existingReview.Rating = review.Rating;
+
+            _reviewRepository.Update(existingReview);
+
+            return RedirectToAction("BlogDetails", new { urlHandle = urlHandle });
+        }
+
+        [HttpPost]
+        [Area("User")]
+        [Route("blog/{urlHandle}/delete-review")]
+        public IActionResult DeleteReview(string urlHandle, Guid reviewId)
+        {
+            var review = _reviewRepository.GetById(reviewId);
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            var user = _userManager.GetUserAsync(User).Result;
+            if (user == null || user.Id != review.UserId)
+            {
+                return Unauthorized();
+            }
+
+            _reviewRepository.Delete(reviewId);
+
+            return RedirectToAction("BlogDetails", new { urlHandle = urlHandle });
+        }
+
     }
 }
