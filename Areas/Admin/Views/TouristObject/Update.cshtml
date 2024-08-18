@@ -23,34 +23,111 @@
                 <span class="text-danger" asp-validation-for="Address"></span>
             </div>
 
-            <div class="mb-3">
-                <label for="latitude" class="form-label">Latitude</label>
-                <input type="text" class="form-control" id="latitude" asp-for="Latitude" required>
-                <span class="text-danger" asp-validation-for="Latitude"></span>
-            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label for="latitude" class="form-label">Latitude</label>
+                        <input type="text" class="form-control" id="latitude" asp-for="Latitude" required>
+                        <span class="text-danger" asp-validation-for="Latitude"></span>
+                    </div>
 
-            <div class="mb-3">
-                <label for="longitude" class="form-label">Longitude</label>
-                <input type="text" class="form-control" id="longitude" asp-for="Longitude" required>
-                <span class="text-danger" asp-validation-for="Longitude"></span>
-            </div>
+                    <div class="mb-3">
+                        <label for="longitude" class="form-label">Longitude</label>
+                        <input type="text" class="form-control" id="longitude" asp-for="Longitude" required>
+                        <span class="text-danger" asp-validation-for="Longitude"></span>
+                    </div>
 
-            <div class="mb-3">
-                <label for="openingTime" class="form-label">Opening Time</label>
-                <input type="time" class="form-control" id="openingTime" asp-for="OpeningTime" required>
-                <span class="text-danger" asp-validation-for="OpeningTime"></span>
-            </div>
+                    <div class="mb-3">
+                        <label for="openingTime" class="form-label">Opening Time</label>
+                        <input type="time" class="form-control" id="openingTime" asp-for="OpeningTime" required>
+                        <span class="text-danger" asp-validation-for="OpeningTime"></span>
+                    </div>
 
-            <div class="mb-3">
-                <label for="closingTime" class="form-label">Closing Time</label>
-                <input type="time" class="form-control" id="closingTime" asp-for="ClosingTime" required>
-                <span class="text-danger" asp-validation-for="ClosingTime"></span>
-            </div>
+                    <div class="mb-3">
+                        <label for="closingTime" class="form-label">Closing Time</label>
+                        <input type="time" class="form-control" id="closingTime" asp-for="ClosingTime" required>
+                        <span class="text-danger" asp-validation-for="ClosingTime"></span>
+                    </div>
 
-            <div class="mb-3 d-flex justify-content-between">
-                <button class="btn btn-primary" type="submit">Submit</button>
-                <a href="@Url.Action("List", "TouristObject")" class="btn btn-secondary">Cancel</a>
+                    <div class="mb-3 d-flex justify-content-between">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <a href="@Url.Action("List", "TouristObject")" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div id="map" style="height: 360px; width: 600px;"></div>
+                    <script>
+                        let map, marker;
+
+                        async function initMap() {
+                            const { Map } = await google.maps.importLibrary("maps");
+                            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+                            const lat = parseFloat(document.getElementById("latitude").value.replace(',', '.'));
+                            const lng = parseFloat(document.getElementById("longitude").value.replace(',', '.'));
+
+                            map = new Map(document.getElementById("map"), {
+                                center: { lat: lat, lng: lng },
+                                zoom: 14,
+                                mapId: "4504f8b37365c3d0",
+                            });
+
+                            marker = new AdvancedMarkerElement({
+                                map,
+                                position: { 
+                                    lat: lat, 
+                                    lng: lng
+                                },
+                                gmpDraggable: true
+                            });
+
+                            document.getElementById("latitude").addEventListener("input", updateMarkerPosition);
+                            document.getElementById("longitude").addEventListener("input", updateMarkerPosition);
+
+                            marker.addListener("dragend", updateInputFields);
+                        }
+
+                        function updateMarkerPosition() {
+                            const lat = parseFloat(document.getElementById("latitude").value);
+                            const lng = parseFloat(document.getElementById("longitude").value);
+
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                const position = { lat: lat, lng: lng };
+                                marker.position = position;
+                                map.setCenter(position);
+                            }
+                        }
+
+                        function updateInputFields() {
+                            const position = marker.position;
+                            document.getElementById("latitude").value = position.lat.toFixed(15).replace('.', ',');
+                            document.getElementById("longitude").value = position.lng.toFixed(15).replace('.', ',');
+                        }
+
+                        function convertCoordinates() {
+                            const latInput = document.getElementById("latitude");
+                            const lngInput = document.getElementById("longitude");
+
+                            latInput.value = latInput.value.replace(',', '.');
+                            lngInput.value = lngInput.value.replace(',', '.');
+                        }
+
+                        initMap();
+                    </script>
+                    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap" async defer></script>
+                </div>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("latitude").addEventListener("input", function () {
+            this.value = this.value.replace(",", ".");
+        });
+
+        document.getElementById("longitude").addEventListener("input", function () {
+            this.value = this.value.replace(",", ".");
+        });
+    </script>
+}
