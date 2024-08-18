@@ -18,9 +18,30 @@ namespace TripGuide.Repository
             tripGuideDbContext.SaveChanges();
         }
 
+        public void Update(Review review)
+        {
+            tripGuideDbContext.Reviews.Update(review);
+            tripGuideDbContext.SaveChanges();
+        }
+
+        public void Delete(Guid reviewId)
+        {
+            var review = tripGuideDbContext.Reviews.Find(reviewId);
+            if (review != null)
+            {
+                tripGuideDbContext.Reviews.Remove(review);
+                tripGuideDbContext.SaveChanges();
+            }
+        }
+
         public IEnumerable<Review> GetByBlogPostId(Guid blogPostId)
         {
             return tripGuideDbContext.Reviews.Where(r => r.BlogPostId == blogPostId).ToList();
+        }
+
+        public Review GetById(Guid reviewId)
+        {
+            return tripGuideDbContext.Reviews.Find(reviewId);
         }
     }
 }
