@@ -59,7 +59,7 @@ namespace TripGuide.Controllers
 
         [Area("User")]
         [Route("blog/{urlHandle}")]
-        public async Task<IActionResult> BlogDetails(string urlHandle)
+        public IActionResult BlogDetails(string urlHandle)
         {
             var blog = _blogPostRepository.GetByUrl(urlHandle);
             if (blog == null)
@@ -71,7 +71,7 @@ namespace TripGuide.Controllers
 
             foreach (var review in reviews)
             {
-                var user = await _userManager.FindByIdAsync(review.UserId);
+                var user = _userManager.FindByIdAsync(review.UserId).Result;
                 review.UserName = user?.UserName;
             }
 
@@ -87,7 +87,7 @@ namespace TripGuide.Controllers
         [HttpPost]
         [Area("User")]
         [Route("blog/{urlHandle}/add-review")]
-        public async Task<IActionResult> AddReview(string urlHandle, Review review)
+        public IActionResult AddReview(string urlHandle, Review review)
         {
             var blog = _blogPostRepository.GetByUrl(urlHandle);
             if (blog == null)
@@ -95,7 +95,7 @@ namespace TripGuide.Controllers
                 return NotFound();
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = _userManager.GetUserAsync(User).Result;
             if (user == null)
             {
                 return Unauthorized();
