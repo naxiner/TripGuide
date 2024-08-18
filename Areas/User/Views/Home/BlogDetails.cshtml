@@ -36,12 +36,46 @@
 
                 @if (Model.BlogPost.TouristObject != null)
                 {
-                    <div class="mt-4 p-3 bg-light rounded">
+                    <div class="mt-4 mb-3 p-3 bg-light rounded">
                         <h4 class="mb-3">About the Tourist Object</h4>
                         <p><strong>Name:</strong> @Model.BlogPost.TouristObject.Name</p>
                         <p><strong>Address:</strong> @Model.BlogPost.TouristObject.Address</p>
                         <p><strong>Coordinates:</strong> Latitude: @Model.BlogPost.TouristObject.Latitude, Longitude: @Model.BlogPost.TouristObject.Longitude</p>
                         <p><strong>Opening Hours:</strong> @Model.BlogPost.TouristObject.OpeningTime.ToString(@"hh\:mm") - @Model.BlogPost.TouristObject.ClosingTime.ToString(@"hh\:mm")</p>
+                    </div>
+                    <div>
+                        <div id="map" style="height: 360px; width: 620px;"></div>
+                        <script>
+                            let map, marker;
+                            const latitude = @Model.BlogPost.TouristObject.Latitude.ToString().Replace(",", ".");
+                            const longitude = @Model.BlogPost.TouristObject.Longitude.ToString().Replace(",", ".");
+
+                            async function initMap() {
+                                const { Map } = await google.maps.importLibrary("maps");
+                                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+
+                                map = new Map(document.getElementById("map"), {
+                                    center: { lat: latitude, lng: longitude },
+                                    zoom: 14,
+                                    mapId: "4504f8b37365c3d0",
+                                });
+
+                                marker = new AdvancedMarkerElement({
+                                    map,
+                                    position: {
+                                        lat: latitude,
+                                        lng: longitude
+                                    }
+                                });
+
+                                document.getElementById("latitude").addEventListener("input", updateMarkerPosition);
+                                document.getElementById("longitude").addEventListener("input", updateMarkerPosition);
+                            }
+
+                            initMap();
+                        </script>
+                        <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap" async defer></script>
                     </div>
                 }
 
