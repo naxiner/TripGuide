@@ -1,4 +1,4 @@
-﻿@model BlogPost
+﻿@model TripGuide.Models.ViewModels.BlogDetailsViewModel
 
 @if (Model != null)
 {
@@ -7,19 +7,19 @@
             <div class="col-12 col-lg-6">
 
                 @{
-                    ViewData["Title"] = Model.PageTitle;
+                    ViewData["Title"] = Model.BlogPost.PageTitle;
                 }
 
-                <h1 class="mb-3">@Model.PageTitle</h1>
+                <h1 class="mb-3">@Model.BlogPost.PageTitle</h1>
 
                 <div class="d-flex justify-content-between mb-3">
-                    <span class="text-secondary">@Model.PublishedDate.ToShortDateString()</span>
+                    <span class="text-secondary">@Model.BlogPost.PublishedDate.ToShortDateString()</span>
                 </div>
 
                 <div class="mb-3">
-                    @if (Model.Tags != null)
+                    @if (Model.BlogPost.Tags != null)
                     {
-                        foreach (var tag in Model.Tags)
+                        foreach (var tag in Model.BlogPost.Tags)
                         {
                             <a href="/tags/@tag.Name">
                                 <span class="badge bg-dark">@tag.Name</span>
@@ -28,29 +28,208 @@
                     }
                 </div>
 
-                <img src="@Model.FeaturedImageUrl" alt="@@Model.PageTitle" class="mb-2 d-block img-fluid" />
+                <img src="@Model.BlogPost.FeaturedImageUrl" alt="@@Model.BlogPost.PageTitle" class="mb-2 d-block img-fluid" />
 
                 <div class="mb-3 blog-details">
-                    @Html.Raw(Model.Content)
+                    @Html.Raw(Model.BlogPost.Content)
                 </div>
 
-                @if (Model.TouristObject != null)
+                @if (Model.BlogPost.TouristObject != null)
                 {
                     <div class="mt-4 p-3 bg-light rounded">
                         <h4 class="mb-3">About the Tourist Object</h4>
-                        <p><strong>Name:</strong> @Model.TouristObject.Name</p>
-                        <p><strong>Address:</strong> @Model.TouristObject.Address</p>
-                        <p><strong>Coordinates:</strong> Latitude: @Model.TouristObject.Latitude, Longitude: @Model.TouristObject.Longitude</p>
-                        <p><strong>Opening Hours:</strong> @Model.TouristObject.OpeningTime.ToString(@"hh\:mm") - @Model.TouristObject.ClosingTime.ToString(@"hh\:mm")</p>
+                        <p><strong>Name:</strong> @Model.BlogPost.TouristObject.Name</p>
+                        <p><strong>Address:</strong> @Model.BlogPost.TouristObject.Address</p>
+                        <p><strong>Coordinates:</strong> Latitude: @Model.BlogPost.TouristObject.Latitude, Longitude: @Model.BlogPost.TouristObject.Longitude</p>
+                        <p><strong>Opening Hours:</strong> @Model.BlogPost.TouristObject.OpeningTime.ToString(@"hh\:mm") - @Model.BlogPost.TouristObject.ClosingTime.ToString(@"hh\:mm")</p>
                     </div>
                 }
+
+                <h3 class="my-4">Reviews</h3>
+
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="text-secondary">
+                            <small>@review.UserName</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <strong>@review.Content</strong>
+                            <span class="text-warning">
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    if (i < review.Rating)
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
+                                }
+                            </span>
+                        </div>
+
+                        <div class="text-secondary">
+                            <small>Added on @review.DateAdded.ToShortDateString()</small>
+                        </div>
+
+                        <div class="mt-2 d-flex justify-content-end">
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editReviewModal-@review.Id">Edit</button>
+                            <form method="post" asp-action="DeleteReview" asp-route-urlHandle="@Model.BlogPost.UrlHandle" class="d-inline-block">
+                                <input type="hidden" name="reviewId" value="@review.Id" />
+                                <button type="submit" class="btn btn-link text-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
+                            </form>
+                        </div>
+
+                        <div class="modal fade" id="editReviewModal-@review.Id" tabindex="-1" aria-labelledby="editReviewLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="post" asp-action="EditReview" asp-route-urlHandle="@Model.BlogPost.UrlHandle">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editReviewLabel">Edit Review</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="Id" value="@review.Id" />
+                                            <div class="mb-3">
+                                                <label class="form-label">Rating</label>
+                                                <div>
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <a style="cursor: pointer">
+                                                            <i class="bi @((i <= review.Rating) ? "bi-star-fill text-warning" : "bi-star")" data-value="@i" onclick="setRating(@i, '@review.Id')"></i>
+                                                        </a>
+                                                    }
+                                                    <input type="hidden" id="ratingInput-@review.Id" name="Rating" value="@review.Rating" />
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Review</label>
+                                                <textarea class="form-control" name="Content" rows="4" required>@review.Content</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-dark">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="mb-3 d-flex justify-content-end">
+                    <button type="button" class="btn btn-dark"
+                            data-bs-toggle="modal" data-bs-target="#addReviewModal">
+                        Add Review
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <form method="post" asp-action="AddReview" asp-route-urlHandle="@Model.BlogPost.UrlHandle">
+        <div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addReviewLabel">Add Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div>
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <a style="cursor: pointer">
+                                        <i class="bi bi-star" data-value="@i" onclick="setRating(@i)"></i>
+                                    </a>
+                                }
+                                <input type="hidden" id="ratingInput" name="Rating" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Review</label>
+                            <textarea class="form-control" name="Content" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-dark">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 }
 else
 {
     <div class="container mt-3">
         <h2>Blog post not found!</h2>
     </div>
+}
+
+@section Scripts {
+    <script>
+        function setRating(value, reviewId = null) {
+            let currentRatingInput = document.getElementById('ratingInput');
+
+            if (reviewId) {
+                currentRatingInput = document.getElementById('ratingInput-' + reviewId);
+            }
+
+            const currentValue = parseInt(currentRatingInput.value);
+
+            if (currentValue === value) {
+                resetRating(reviewId);
+                return;
+            }
+
+            const addReviewStars = document.querySelectorAll(
+                reviewId
+                    ? `#editReviewModal-${reviewId} .bi-star, #editReviewModal-${reviewId} .bi-star-fill`
+                    : '#addReviewModal .bi-star, #addReviewModal .bi-star-fill'
+            );
+
+            addReviewStars.forEach((star, index) => {
+                if (index < value) {
+                    star.classList.remove('bi-star');
+                    star.classList.add('bi-star-fill', 'text-warning');
+                } else {
+                    star.classList.remove('bi-star-fill', 'text-warning');
+                    star.classList.add('bi-star');
+                }
+            });
+
+            currentRatingInput.value = value;
+        }
+
+        function resetRating(reviewId = null) {
+            const stars = document.querySelectorAll(
+                reviewId
+                    ? `#editReviewModal-${reviewId} .bi-star-fill`
+                    : '#addReviewModal .bi-star-fill'
+            );
+
+            stars.forEach(star => {
+                star.classList.remove('bi-star-fill', 'text-warning');
+                star.classList.add('bi-star');
+            });
+
+            if (reviewId) {
+                document.getElementById('ratingInput-' + reviewId).value = "";
+            } else {
+                document.getElementById('ratingInput').value = "";
+            }
+        }
+
+        document.getElementById('addReviewModal').addEventListener('show.bs.modal', function () {
+            resetRating();
+        });
+    </script>
 }
