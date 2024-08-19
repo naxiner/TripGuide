@@ -6,6 +6,7 @@ using TripGuide.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TripGuide.Utility;
 using TripGuide.Repository;
+using System.Configuration;
 
 namespace TripGuide
 {
@@ -22,6 +23,8 @@ namespace TripGuide
 
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<TripGuideDbContext>().AddDefaultTokenProviders();
+            
+            builder.Services.Configure<GoogleMapsSettings>(builder.Configuration.GetSection("GoogleMaps"));
             
             builder.Services.AddRazorPages();
 
