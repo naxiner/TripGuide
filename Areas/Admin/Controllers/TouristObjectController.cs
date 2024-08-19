@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
 using TripGuide.Models;
 using TripGuide.Repositories;
 using TripGuide.Utility;
@@ -11,13 +13,15 @@ namespace TripGuide.Controllers
     public class TouristObjectController : Controller
     {
         private readonly ITouristObjectRepository _touristObjectRepository;
+        private readonly GoogleMapsSettings _googleMapsSettings;
 
         [BindProperty]
         public TouristObject TouristObject { get; set; }
 
-        public TouristObjectController(ITouristObjectRepository touristObjectRepository)
+        public TouristObjectController(ITouristObjectRepository touristObjectRepository, IOptions<GoogleMapsSettings> googleMapsSettings)
         {
             _touristObjectRepository = touristObjectRepository;
+            _googleMapsSettings = googleMapsSettings.Value;
         }
 
         public IActionResult Index()
@@ -27,6 +31,7 @@ namespace TripGuide.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.GoogleMapsApiKey = _googleMapsSettings.ApiKey;
             return View();
         }
 
@@ -62,6 +67,7 @@ namespace TripGuide.Controllers
             {
                 return NotFound();
             }
+            ViewBag.GoogleMapsApiKey = _googleMapsSettings.ApiKey;
             return View(touristObject);
         }
 
