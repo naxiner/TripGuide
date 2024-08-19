@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using TripGuide.Models;
 using TripGuide.Models.ViewModels;
 using TripGuide.Repositories;
 using TripGuide.Repository;
+using TripGuide.Utility;
 
 namespace TripGuide.Controllers
 {
@@ -16,6 +18,7 @@ namespace TripGuide.Controllers
         private readonly ITagRepository _tagRepository;
         private readonly IReviewRepository _reviewRepository;
         private readonly UserManager<User> _userManager;
+        private readonly GoogleMapsSettings _googleMapsSettings;
 
         public List<BlogPost> Blogs { get; set; }
 
@@ -26,13 +29,15 @@ namespace TripGuide.Controllers
                       IBlogPostRepository blogPostRepository,
                       ITagRepository tagRepository,
                       IReviewRepository reviewRepository,
-                      UserManager<User> userManager)
+                      UserManager<User> userManager,
+                      IOptions<GoogleMapsSettings> googleMapsSettings)
         {
             _logger = logger;
             _blogPostRepository = blogPostRepository;
             _tagRepository = tagRepository;
             _reviewRepository = reviewRepository;
             _userManager = userManager;
+            _googleMapsSettings = googleMapsSettings.Value;
         }
 
         public IActionResult Index()
@@ -66,6 +71,8 @@ namespace TripGuide.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.GoogleMapsApiKey = _googleMapsSettings.ApiKey;
 
             var reviews = _reviewRepository.GetByBlogPostId(blog.Id).ToList();
 
