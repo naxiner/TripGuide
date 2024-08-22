@@ -21,8 +21,8 @@ namespace TripGuide.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly UserManager<User> _userManager;
         private readonly GoogleMapsSettings _googleMapsSettings;
-        private readonly TripGuideDbContext context;
-        private readonly IUserRepository userRepository;
+        private readonly TripGuideDbContext _context;
+        private readonly IUserRepository _userRepository;
 
         public List<BlogPost> Blogs { get; set; }
 
@@ -44,8 +44,8 @@ namespace TripGuide.Controllers
             _reviewRepository = reviewRepository;
             _userManager = userManager;
             _googleMapsSettings = googleMapsSettings.Value;
-            this.context = context;
-            this.userRepository = userRepository;
+            _context = context;
+            _userRepository = userRepository;
         }
 
         public IActionResult Index()
@@ -188,7 +188,7 @@ namespace TripGuide.Controllers
                 userId = currentUser.Id;
             }
 
-            var user = await userRepository.GetAsync(userId);
+            var user = await _userRepository.GetAsync(userId);
 
             if (user == null)
             {
