@@ -1,0 +1,86 @@
+﻿@model UserProfileViewModel
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-5">
+    <div class="container">
+        <h1>Profile</h1>
+    </div>
+</div>
+
+<div>
+    <div>
+        <div class="row">
+            <div class="col text-center">
+                <img src="@Model.User.AvatarImageUrl" class="img-fluid" style="100%; height: 400px; object-fit: cover;" alt="Profile Picture"/>
+            </div>
+            <div class="col ">
+                <h4>@Model.User.UserName</h4>
+            </div>
+            <div class="col text-center">
+                <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn btn-primary">
+                    <i class="bi bi-sliders"></i>
+                    Profile Settings
+                </a>
+            </div>
+        </div>
+        <div class="mt-5">
+            <h2 class="mb-4 text-center">Your Collection</h2>
+            <div class="d-flex justify-content-center mb-3">
+                <div class="btn-group" role="group" aria-label="Status Filter">
+                    <button type="button" class="btn btn-primary" data-status="visited">Visited</button>
+                    <button type="button" class="btn btn-primary" data-status="want-to-visit">Want to visit</button>
+                </div>
+            </div>
+            <div class="row g-0 w-75 mx-auto">
+                @foreach (var item in Model.Collections)
+                {
+                    <div class="col-md-4 card-container" data-status="@item.Status" style="display: none;">
+                        <div class="card rounded-0">
+                            <a asp-area="User" asp-controller="Home" asp-action="BlogDetails" asp-route-urlHandle="@item.BlogPost.UrlHandle" class="text-decoration-none text-dark">
+                                <img src="@item.BlogPost.FeaturedImageUrl" style="width: 100%; height: 250px; object-fit: cover;" class="card-img-top rounded-0" alt="@item.BlogPost.PageTitle" />
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <p class="card-text mb-0">@item.BlogPost.PageTitle</p>
+                                    <form asp-area="User" asp-controller="Profile" asp-action="Delete" asp-route-blogId="@item.BlogPost.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Are you sure you want to delete this blog from collection?');">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const buttons = document.querySelectorAll(".btn-group button");
+            const cards = document.querySelectorAll(".card-container");
+
+            const initialStatus = "visited";
+            cards.forEach(card => {
+                if (card.getAttribute("data-status") === initialStatus) {
+                    card.style.display = "block";
+                }
+            });
+
+            buttons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const status = this.getAttribute("data-status");
+
+                    cards.forEach(card => {
+                        if (card.getAttribute("data-status") === status) {
+                            card.style.display = "block";
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}
