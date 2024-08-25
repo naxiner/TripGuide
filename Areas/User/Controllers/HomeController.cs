@@ -172,38 +172,5 @@ namespace TripGuide.Controllers
 
             return RedirectToAction("BlogDetails", new { urlHandle = urlHandle });
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Profile(string userId)
-        {
-            if (string.IsNullOrEmpty(userId))
-            {
-                var currentUser = await _userManager.GetUserAsync(User);
-
-                if (currentUser == null)
-                {
-                    return Unauthorized("User is not logged in.");
-                }
-
-                userId = currentUser.Id;
-            }
-
-            var user = await _userRepository.GetAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-
-            var model = new UserRolesViewModel
-            {
-                UserName = user.UserName,
-                AvatarImageUrl = user.AvatarImageUrl,
-                UserId = user.Id
-            };
-
-            return View(model);
-        }
-
     }
 }
