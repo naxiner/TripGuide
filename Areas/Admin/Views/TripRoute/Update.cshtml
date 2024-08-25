@@ -1,0 +1,84 @@
+﻿@model TripRoute
+
+<div class="bg-secondary bg-opacity-10 py-2 mb-5">
+    <div class="container">
+        <h1>Edit Route</h1>
+    </div>
+</div>
+
+<div>
+    <div class="container">
+        <form asp-action="Update" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label for="routeName" class="form-label">Route Name</label>
+                <input type="text" required class="form-control" id="routeName" asp-for="Name">
+                <span class="text-danger" asp-validation-for="Name"></span>
+            </div>
+
+            <div id="touristObjectContainer">
+                @if (Model.TripRouteTouristObjects != null && Model.TripRouteTouristObjects.Count > 0)
+                {
+                    @for (int i = 0; i < Model.TripRouteTouristObjects.Count; i++)
+                    {
+                        <div class="mb-3">
+                            <label for="touristObject@(i + 1)" class="form-label">Tourist Object @(i + 1)</label>
+                            <select class="form-select" id="touristObject@(i + 1)" name="TouristObjectIds[@i]">
+                                <option value="">Select a Tourist Object</option>
+                                @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
+                                {
+                                    if (Model.TripRouteTouristObjects[i].TouristObjectId == obj.Id)
+                                    {
+                                        <option value="@obj.Id" selected>@obj.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@obj.Id">@obj.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span class="text-danger" asp-validation-for="TouristObjectIds[@i]"></span>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="mb-3">
+                <button type="button" class="btn btn-secondary" id="addObjectButton">Add Another Tourist Object</button>
+            </div>
+
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let objectIndex = @Model.TripRouteTouristObjects.Count;
+
+        document.getElementById('addObjectButton').addEventListener('click', function () {
+            objectIndex++;
+
+            const container = document.getElementById('touristObjectContainer');
+
+            const newDiv = document.createElement('div');
+            newDiv.classList.add('mb-3');
+            newDiv.innerHTML = `
+                        <label for="touristObject${objectIndex}" class="form-label">Tourist Object ${objectIndex}</label>
+                        <select class="form-select" id="touristObject${objectIndex}" name="TouristObjectIds[${objectIndex - 1}]">
+                            <option value="">Select a Tourist Object</option>
+        @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
+        {
+                                    <option value="@obj.Id">@obj.Name</option>
+        }
+                        </select>
+                        <span class="text-danger" asp-validation-for="TouristObjectIds[${objectIndex - 1}]"></span>
+                    `;
+
+            container.appendChild(newDiv);
+        });
+    </script>
+}
