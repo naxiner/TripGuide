@@ -31,6 +31,7 @@ namespace TripGuide
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IUserBlogPostRepository, UserBlogPostRepository>();
             builder.Services.AddScoped<IImageRepository, ImageRepository>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ITagRepository, TagRepository>();
