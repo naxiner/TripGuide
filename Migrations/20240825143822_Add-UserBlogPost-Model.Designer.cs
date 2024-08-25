@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TripGuide.Data;
 
@@ -11,9 +12,11 @@ using TripGuide.Data;
 namespace TripGuide.Migrations
 {
     [DbContext(typeof(TripGuideDbContext))]
-    partial class TripGuideDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240825143822_Add-UserBlogPost-Model")]
+    partial class AddUserBlogPostModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,36 +281,6 @@ namespace TripGuide.Migrations
                     b.ToTable("TouristObjects");
                 });
 
-            modelBuilder.Entity("TripGuide.Models.TripRoute", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TripRoutes");
-                });
-
-            modelBuilder.Entity("TripGuide.Models.TripRouteTouristObject", b =>
-                {
-                    b.Property<Guid>("TripRouteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TouristObjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("TripRouteId", "TouristObjectId");
-
-                    b.HasIndex("TouristObjectId");
-
-                    b.ToTable("TripRouteTouristObjects");
-                });
-
             modelBuilder.Entity("TripGuide.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -492,24 +465,6 @@ namespace TripGuide.Migrations
                     b.Navigation("BlogPost");
 
                     b.Navigation("User");
-
-            modelBuilder.Entity("TripGuide.Models.TripRouteTouristObject", b =>
-                {
-                    b.HasOne("TripGuide.Models.TouristObject", "TouristObject")
-                        .WithMany("TripRouteTouristObjects")
-                        .HasForeignKey("TouristObjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TripGuide.Models.TripRoute", "TripRoute")
-                        .WithMany("TripRouteTouristObjects")
-                        .HasForeignKey("TripRouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TouristObject");
-
-                    b.Navigation("TripRoute");
                 });
 
             modelBuilder.Entity("TripGuide.Models.BlogPost", b =>
@@ -524,16 +479,6 @@ namespace TripGuide.Migrations
             modelBuilder.Entity("TripGuide.Models.User", b =>
                 {
                     b.Navigation("UserBlogPosts");
-                });
-
-            modelBuilder.Entity("TripGuide.Models.TouristObject", b =>
-                {
-                    b.Navigation("TripRouteTouristObjects");
-                });
-
-            modelBuilder.Entity("TripGuide.Models.TripRoute", b =>
-                {
-                    b.Navigation("TripRouteTouristObjects");
                 });
 #pragma warning restore 612, 618
         }

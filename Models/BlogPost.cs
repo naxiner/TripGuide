@@ -20,5 +20,6 @@ namespace TripGuide.Models
         public ICollection<Review>? Reviews { get; set; }
         public Guid TouristObjectId { get; set; }
         public TouristObject? TouristObject { get; set; }
+        public ICollection<UserBlogPost>? UserBlogPosts { get; set; }
     }
 }
