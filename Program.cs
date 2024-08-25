@@ -35,6 +35,7 @@ namespace TripGuide
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ITagRepository, TagRepository>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<ITripRouteRepository, TripRouteRepository>();
 
             var app = builder.Build();
 

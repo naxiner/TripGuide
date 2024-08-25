@@ -9,5 +9,7 @@
         public double Longitude { get; set; }
         public TimeSpan OpeningTime { get; set; }
         public TimeSpan ClosingTime { get; set; }
+
+        public List<TripRouteTouristObject> TripRouteTouristObjects { get; set; }
     }
 }
