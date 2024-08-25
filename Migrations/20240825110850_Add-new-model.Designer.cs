@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TripGuide.Data;
 
@@ -11,9 +12,11 @@ using TripGuide.Data;
 namespace TripGuide.Migrations
 {
     [DbContext(typeof(TripGuideDbContext))]
-    partial class TripGuideDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240825110850_Add-new-model")]
+    partial class Addnewmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -376,25 +379,6 @@ namespace TripGuide.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TripGuide.Models.UserBlogPost", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("BlogPostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "BlogPostId");
-
-                    b.HasIndex("BlogPostId");
-
-                    b.ToTable("UserBlogPosts");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -475,24 +459,6 @@ namespace TripGuide.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TripGuide.Models.UserBlogPost", b =>
-                {
-                    b.HasOne("TripGuide.Models.BlogPost", "BlogPost")
-                        .WithMany("UserBlogPosts")
-                        .HasForeignKey("BlogPostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TripGuide.Models.User", "User")
-                        .WithMany("UserBlogPosts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BlogPost");
-
-                    b.Navigation("User");
-
             modelBuilder.Entity("TripGuide.Models.TripRouteTouristObject", b =>
                 {
                     b.HasOne("TripGuide.Models.TouristObject", "TouristObject")
@@ -517,13 +483,6 @@ namespace TripGuide.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Tags");
-
-                    b.Navigation("UserBlogPosts");
-                });
-
-            modelBuilder.Entity("TripGuide.Models.User", b =>
-                {
-                    b.Navigation("UserBlogPosts");
                 });
 
             modelBuilder.Entity("TripGuide.Models.TouristObject", b =>

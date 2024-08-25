@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using TripGuide.Data;
 using TripGuide.Models;
 using TripGuide.Models.ViewModels;
 using TripGuide.Repositories;
@@ -19,6 +21,8 @@ namespace TripGuide.Controllers
         private readonly IReviewRepository _reviewRepository;
         private readonly UserManager<User> _userManager;
         private readonly GoogleMapsSettings _googleMapsSettings;
+        private readonly TripGuideDbContext _context;
+        private readonly IUserRepository _userRepository;
 
         public List<BlogPost> Blogs { get; set; }
 
@@ -30,7 +34,9 @@ namespace TripGuide.Controllers
                       ITagRepository tagRepository,
                       IReviewRepository reviewRepository,
                       UserManager<User> userManager,
-                      IOptions<GoogleMapsSettings> googleMapsSettings)
+                      IOptions<GoogleMapsSettings> googleMapsSettings,
+                      TripGuideDbContext context,
+                      IUserRepository userRepository)
         {
             _logger = logger;
             _blogPostRepository = blogPostRepository;
@@ -38,6 +44,8 @@ namespace TripGuide.Controllers
             _reviewRepository = reviewRepository;
             _userManager = userManager;
             _googleMapsSettings = googleMapsSettings.Value;
+            _context = context;
+            _userRepository = userRepository;
         }
 
         public IActionResult Index()
@@ -163,6 +171,38 @@ namespace TripGuide.Controllers
             _reviewRepository.Delete(reviewId);
 
             return RedirectToAction("BlogDetails", new { urlHandle = urlHandle });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                if (currentUser == null)
+                {
+                    return Unauthorized("User is not logged in.");
+                }
+
+                userId = currentUser.Id;
+            }
+
+            var user = await _userRepository.GetAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var model = new UserRolesViewModel
+            {
+                UserName = user.UserName,
+                AvatarImageUrl = user.AvatarImageUrl,
+                UserId = user.Id
+            };
+
+            return View(model);
         }
 
     }
