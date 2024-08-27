@@ -8,6 +8,7 @@ namespace TripGuide.Models
         [NotMapped]
         public IFormFile? AvatarImage { get; set; }
         public string? AvatarImageUrl { get; set; }
+        public bool AccountVerified { get; set; }
         public ICollection<UserBlogPost>? UserBlogPosts { get; set; }
     }
 }
