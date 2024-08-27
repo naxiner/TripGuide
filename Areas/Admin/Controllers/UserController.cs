@@ -41,6 +41,7 @@ namespace TripGuide.Areas.Admin.Controllers
                     UserName = user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
+                    AccountVerified = user.AccountVerified,
                     IsBanned = user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow,
                     Roles = roles
                 });
@@ -65,6 +66,7 @@ namespace TripGuide.Areas.Admin.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                AccountVerified=user.AccountVerified,
                 AvatarImageUrl = user.AvatarImageUrl,
                 Roles = role,
                 AllRoles = allRoles
@@ -103,6 +105,7 @@ namespace TripGuide.Areas.Admin.Controllers
                 user.UserName = userRolesVM.UserName;
                 user.Email = userRolesVM.Email;
                 user.PhoneNumber = userRolesVM.PhoneNumber;
+                user.AccountVerified = userRolesVM.AccountVerified;
                 user.AvatarImageUrl = userRolesVM.AvatarImageUrl;
 
                 await _userRepository.UpdateAsync(user);
