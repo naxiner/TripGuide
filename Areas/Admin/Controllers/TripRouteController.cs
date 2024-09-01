@@ -141,5 +141,22 @@ namespace TripGuide.Controllers
             var tripRoutes = tripRouteRepository.GetAll();
             return View(tripRoutes);
         }
+
+        [HttpGet("api/route/{id}")]
+        public IActionResult GetRoute(Guid id)
+        {
+            var route = tripRouteRepository.Get(id);
+            if (route == null)
+            {
+                return NotFound();
+            }
+            var routeData = new
+            {
+                id = route.Id,
+                name = route.Name
+            };
+            return Json(routeData);
+        }
+
     }
 }

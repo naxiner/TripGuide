@@ -97,5 +97,10 @@ namespace TripGuide.Repositories
                 .Include(nameof(BlogPost.Tags))
                 .FirstOrDefault(bp => bp.UrlHandle == urlHandle);
         }
+
+        public IEnumerable<TripRoute> GetAllTripRoutes()
+        {
+            return _dbContext.TripRoutes.ToList() ?? new List<TripRoute>();
+        }
     }
 }

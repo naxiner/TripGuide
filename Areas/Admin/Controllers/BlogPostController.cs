@@ -19,6 +19,7 @@ namespace TripGuide.Controllers
         private readonly IImageRepository imageRepository;
         private readonly ITouristObjectRepository touristObjectRepository;
         private readonly TripGuideDbContext context;
+        private readonly ITripRouteRepository routeRepository;
 
         [BindProperty]
         public BlogPost BlogPost { get; set; }
@@ -29,12 +30,13 @@ namespace TripGuide.Controllers
         [BindProperty]
         public string Tags { get; set; }
 
-        public BlogPostController(IBlogPostRepository blogPostRepository, IImageRepository imageRepository, ITouristObjectRepository touristObjectRepository, TripGuideDbContext context)
+        public BlogPostController(IBlogPostRepository blogPostRepository, IImageRepository imageRepository, ITouristObjectRepository touristObjectRepository, TripGuideDbContext context, ITripRouteRepository routeRepository)
         {
             this.blogPostRepository = blogPostRepository;
             this.imageRepository = imageRepository;
             this.touristObjectRepository = touristObjectRepository;
             this.context = context;
+            this.routeRepository = routeRepository;
         }
 
         public IActionResult Index()
@@ -46,7 +48,19 @@ namespace TripGuide.Controllers
         {
             var touristObjects = context.TouristObjects.ToList();
             ViewBag.TouristObjects = touristObjects;
-            return View();
+
+            var routes = context.TripRoutes.Include(tr => tr.TripRouteTouristObjects).ToList();
+            ViewBag.TripRoute = routes;
+
+            BlogPost blogPost = new BlogPost
+            {
+                TripRoute = new TripRoute
+                {
+                    TripRouteTouristObjects = new List<TripRouteTouristObject>()
+                }
+            };
+
+            return View(blogPost);
         }
 
         [HttpPost]
@@ -71,6 +85,7 @@ namespace TripGuide.Controllers
                     PublishedDate = BlogPost.PublishedDate,
                     UserId = BlogPost.UserId,
                     TouristObjectId = BlogPost.TouristObjectId,
+                    TripRouteId = BlogPost.TripRouteId,
                     Tags = tagList.Select(x => new Tag() { Name = x }).ToList()
                 };
                 blogPostRepository.Add(blogPost);
@@ -79,6 +94,7 @@ namespace TripGuide.Controllers
             }
 
             ViewBag.TouristObjects = touristObjectRepository.GetAll();
+            ViewBag.TripRoute = routeRepository.GetAll();
 
             return View("Create");
         }
@@ -98,6 +114,12 @@ namespace TripGuide.Controllers
             }
 
             ViewBag.TouristObjects = blogPostRepository.GetAllTouristObjects();
+
+            var tripRoute = context.TripRoutes
+                .Include(tr => tr.TripRouteTouristObjects)
+                .FirstOrDefault(tr => tr.Id == blogPost.TripRouteId);
+
+            ViewBag.TripRoute = tripRoute;
 
             return View(blogPost);
         }
