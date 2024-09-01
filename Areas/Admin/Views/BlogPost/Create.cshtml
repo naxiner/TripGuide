@@ -51,36 +51,72 @@
                 <span class="text-danger" asp-validation-for="PublishedDate"></span>
             </div>
 
-            <div class="mb-3">
-                <label for="touristObject" class="form-label">Tourist Object</label>
-                <select class="form-select" id="touristObject" name="TouristObject" asp-for="TouristObject" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name"))">
-                    <option value="">Select a Tourist Object</option>
-                </select>
-                <span class="text-danger" asp-validation-for="TouristObject"></span>
+            <div class="d-flex justify-content-center mb-3">
+                <div class="btn-group" role="group" aria-label="Type Filter">
+                    <button type="button" class="btn btn-primary" id="selectTouristObject">Tourist Object</button>
+                    <button type="button" class="btn btn-primary" id="selectRoute">Route</button>
+                </div>
             </div>
-            
-            <div id="touristObjectDetails" style="display: none;">
-                <input type="text" hidden class="form-control" id="id" name="TouristObjectId" asp-for="TouristObjectId">
-                <input type="text" hidden class="form-control" id="name" style="display: none;">
+
+            <div id="touristObjectSection" style="display: none;">
                 <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <input type="text" readonly class="form-control" id="address">
+                    <label for="touristObject" class="form-label">Tourist Object</label>
+                    <select class="form-select" id="touristObject" name="TouristObject" asp-for="TouristObject" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name"))">
+                        <option value="">Select a Tourist Object</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="TouristObject"></span>
                 </div>
-                <div class="mb-3">
-                    <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" readonly class="form-control" id="latitude">
+                <div id="touristObjectDetails" style="display: none;">
+                    <input type="text" hidden class="form-control" id="id" name="TouristObjectId" asp-for="TouristObjectId">
+                    <input type="text" hidden class="form-control" id="name" style="display: none;">
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" readonly class="form-control" id="address">
+                    </div>
+                    <div class="mb-3">
+                        <label for="latitude" class="form-label">Latitude</label>
+                        <input type="text" readonly class="form-control" id="latitude">
+                    </div>
+                    <div class="mb-3">
+                        <label for="longitude" class="form-label">Longitude</label>
+                        <input type="text" readonly class="form-control" id="longitude">
+                    </div>
+                    <div class="mb-3">
+                        <label for="openingTime" class="form-label">Opening Time</label>
+                        <input type="text" readonly class="form-control" id="openingTime">
+                    </div>
+                    <div class="mb-3">
+                        <label for="closingTime" class="form-label">Closing Time</label>
+                        <input type="text" readonly class="form-control" id="closingTime">
+                    </div>
                 </div>
+            </div>
+
+            <div id="tripRouteSection" style="display: none;">
                 <div class="mb-3">
-                    <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" readonly class="form-control" id="longitude">
+                    <label for="tripRoute" class="form-label">Route</label>
+                    <select class="form-select" id="tripRoute" name="TripRoute" asp-for="TripRoute" asp-items="@(new SelectList(ViewBag.TripRoute, "Id", "Name"))">
+                        <option value="">Select a Route</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="TripRoute"></span>
                 </div>
-                <div class="mb-3">
-                    <label for="openingTime" class="form-label">Opening Time</label>
-                    <input type="text" readonly class="form-control" id="openingTime">
-                </div>
-                <div class="mb-3">
-                    <label for="closingTime" class="form-label">Closing Time</label>
-                    <input type="text" readonly class="form-control" id="closingTime">
+                <div id="tripRouteDetails" style="display: none;">
+                    <input type="text" hidden class="form-control" id="id" name="TripRouteId" asp-for="TripRouteId">
+                    <input type="text" hidden class="form-control" id="name" style="display: none;">
+                    @* @for (int i = 0; i < Model.TripRoute.TripRouteTouristObjects.Count; i++)
+                    {
+                        <div class="mb-3">
+                            <label for="touristObject@i" class="form-label">Tourist Object @i + 1</label>
+                            <select class="form-select" id="touristObject@i" name="TripRoute.TripRouteTouristObjects[@i].TouristObjectId" asp-for="TripRoute.TripRouteTouristObjects[@i].TouristObjectId">
+                                <option value="">Select a Tourist Object</option>
+                                @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
+                                {
+                                    <option value="@obj.Id">@obj.Name</option>
+                                }
+                            </select>
+                            <span class="text-danger" asp-validation-for="TouristObjectIds[@i]"></span>
+                        </div>
+                    } *@
                 </div>
             </div>
 
@@ -102,6 +138,22 @@
         document.addEventListener('DOMContentLoaded', function () {
             const touristObjectSelect = document.getElementById('touristObject');
             const touristObjectDetails = document.getElementById('touristObjectDetails');
+            const selectTouristObjectBtn = document.getElementById('selectTouristObject');
+            const selectRouteBtn = document.getElementById('selectRoute');
+            const touristObjectSection = document.getElementById('touristObjectSection');
+            const routeSelect = document.getElementById('tripRoute');
+            const routeDetails = document.getElementById('tripRouteDetails');
+            const routeSection = document.getElementById('tripRouteSection');
+
+            selectTouristObjectBtn.addEventListener('click', function () {
+                touristObjectSection.style.display = 'block';
+                routeSection.style.display = 'none';
+            });
+
+            selectRouteBtn.addEventListener('click', function () {
+                touristObjectSection.style.display = 'none';
+                routeSection.style.display = 'block';
+            });
 
             touristObjectSelect.addEventListener('change', function () {
                 const selectedObjectId = touristObjectSelect.value;
@@ -127,6 +179,36 @@
                     touristObjectDetails.style.display = 'none';
                 }
             });
+
+            routeSelect.addEventListener('change', function () {
+                const selectedRouteId = routeSelect.value;
+                if (selectedRouteId) {
+                    fetch(`/api/route/${selectedRouteId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Received route data:', data);
+                            const routeIdElement = document.getElementById('tr_id');
+                            const routeNameElement = document.getElementById('name');
+
+                            if (routeIdElement) routeIdElement.value = data.id || '';
+                            if (routeNameElement) routeNameElement.value = data.name || '';
+
+                            if (routeDetails) routeDetails.style.display = 'block';
+                        })
+                        .catch(error => {
+                            console.error('Error fetching route data:', error);
+                            if (routeDetails) routeDetails.style.display = 'none';
+                        });
+                } else {
+                    if (routeDetails) routeDetails.style.display = 'none';
+                }
+            });
+
         });
 
         var editor = new FroalaEditor('#content');
@@ -134,7 +216,6 @@
         const featuredImageUploadElement = document.getElementById('featuredImageUpload');
         const featuredImageUrl = document.getElementById('featuredImageUrl');
         const featuredImageDisplay = document.getElementById('featuredImageDisplay');
-
 
         async function uploadFeaturedImage(e) {
             console.log(e.target.files[0]);
