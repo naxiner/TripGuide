@@ -13,5 +13,9 @@ namespace TripGuide.Models
 
         [NotMapped]
         public string? UserName { get; set; }
+
+        [NotMapped]
+        public IFormFile? FeaturedImage { get; set; }
+        public string? FeaturedImageUrl { get; set; }
     }
 }
