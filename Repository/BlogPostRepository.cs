@@ -66,6 +66,7 @@ namespace TripGuide.Repositories
                 existingBlogPost.PublishedDate = blogPost.PublishedDate;
                 existingBlogPost.UserId = blogPost.UserId;
                 existingBlogPost.TouristObject = blogPost.TouristObject;
+                existingBlogPost.TripRoute = blogPost.TripRoute;
 
                 if (blogPost.Tags != null && blogPost.Tags.Any())
                 {

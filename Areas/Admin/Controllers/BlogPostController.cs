@@ -114,6 +114,7 @@ namespace TripGuide.Controllers
             }
 
             ViewBag.TouristObjects = blogPostRepository.GetAllTouristObjects();
+            ViewBag.TripRoutes = blogPostRepository.GetAllTripRoutes();
 
             var tripRoute = context.TripRoutes
                 .Include(tr => tr.TripRouteTouristObjects)
@@ -150,6 +151,7 @@ namespace TripGuide.Controllers
                 existingBlogPost.PublishedDate = updatedBlogPost.PublishedDate;
                 existingBlogPost.UserId = updatedBlogPost.UserId;
                 existingBlogPost.TouristObjectId = updatedBlogPost.TouristObjectId;
+                existingBlogPost.TripRouteId = updatedBlogPost.TripRouteId;
                 existingBlogPost.Reviews = updatedBlogPost.Reviews;
 
                 existingBlogPost.Tags = tagList.Select(x => new Tag() { Name = x }).ToList();
