@@ -66,6 +66,7 @@ namespace TripGuide.Repositories
                 existingBlogPost.PublishedDate = blogPost.PublishedDate;
                 existingBlogPost.UserId = blogPost.UserId;
                 existingBlogPost.TouristObject = blogPost.TouristObject;
+                existingBlogPost.TripRoute = blogPost.TripRoute;
 
                 if (blogPost.Tags != null && blogPost.Tags.Any())
                 {
@@ -96,6 +97,11 @@ namespace TripGuide.Repositories
                 .Include(bp => bp.TouristObject)
                 .Include(nameof(BlogPost.Tags))
                 .FirstOrDefault(bp => bp.UrlHandle == urlHandle);
+        }
+
+        public IEnumerable<TripRoute> GetAllTripRoutes()
+        {
+            return _dbContext.TripRoutes.ToList() ?? new List<TripRoute>();
         }
     }
 }

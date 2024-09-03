@@ -75,15 +75,16 @@
                     @Html.Raw(Model.BlogPost.Content)
                 </div>
 
-                @if (Model.BlogPost.TouristObject != null)
+                @if (Model.TouristObject != null)
                 {
                     <div class="mt-4 mb-3 p-3 bg-light rounded">
                         <h4 class="mb-3">About the Tourist Object</h4>
-                        <p><strong>Name:</strong> @Model.BlogPost.TouristObject.Name</p>
-                        <p><strong>Address:</strong> @Model.BlogPost.TouristObject.Address</p>
-                        <p><strong>Coordinates:</strong> Latitude: @Model.BlogPost.TouristObject.Latitude, Longitude: @Model.BlogPost.TouristObject.Longitude</p>
-                        <p><strong>Opening Hours:</strong> @Model.BlogPost.TouristObject.OpeningTime.ToString(@"hh\:mm") - @Model.BlogPost.TouristObject.ClosingTime.ToString(@"hh\:mm")</p>
+                        <p><strong>Name:</strong> @Model.TouristObject.Name</p>
+                        <p><strong>Address:</strong> @Model.TouristObject.Address</p>
+                        <p><strong>Coordinates:</strong> Latitude: @Model.TouristObject.Latitude, Longitude: @Model.TouristObject.Longitude</p>
+                        <p><strong>Opening Hours:</strong> @Model.TouristObject.OpeningTime.ToString(@"hh\:mm") - @Model.TouristObject.ClosingTime.ToString(@"hh\:mm")</p>
                     </div>
+
                     <div>
                         <div id="map" style="height: 360px; width: 620px;"></div>
                         <script>
@@ -117,6 +118,26 @@
                             initMap();
                         </script>
                         <script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&callback=initMap" async defer></script>
+                    </div>
+                }
+
+                @if (Model.TripRoute != null)
+                {
+                    <div class="mt-4 mb-3 p-3 bg-light rounded">
+                        <h4 class="mb-3">About the Trip Route</h4>
+                        <p><strong>Name:</strong> @Model.TripRoute.Name</p>
+
+                        <h5>Tourist Objects in this Route:</h5>
+                        <ul>
+                            @foreach (var tripRouteObject in Model.TripRoute.TripRouteTouristObjects)
+                            {
+                                <li>
+                                    <strong>@tripRouteObject.TouristObject.Name</strong><br />
+                                    Address: @tripRouteObject.TouristObject.Address <br />
+                                    Coordinates: Latitude: @tripRouteObject.TouristObject.Latitude, Longitude: @tripRouteObject.TouristObject.Longitude
+                                </li>
+                            }
+                        </ul>
                     </div>
                 }
 
