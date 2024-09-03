@@ -90,10 +90,28 @@ namespace TripGuide.Controllers
                 review.UserName = user?.UserName;
             }
 
+            TouristObject? touristObject = null;
+            TripRoute? tripRoute = null;
+
+            if (blog.TouristObjectId.HasValue)
+            {
+                touristObject = _context.TouristObjects.FirstOrDefault(to => to.Id == blog.TouristObjectId);
+            }
+
+            if (blog.TripRouteId.HasValue)
+            {
+                tripRoute = _context.TripRoutes
+                            .Include(tr => tr.TripRouteTouristObjects)
+                                .ThenInclude(tro => tro.TouristObject)
+                            .FirstOrDefault(tr => tr.Id == blog.TripRouteId);
+            }
+
             var viewModel = new BlogDetailsViewModel
             {
                 BlogPost = blog,
-                Reviews = reviews
+                Reviews = reviews,
+                TouristObject = touristObject,
+                TripRoute = tripRoute
             };
 
             return View("BlogDetails", viewModel);
