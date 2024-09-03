@@ -11,5 +11,6 @@ namespace TripGuide.Repositories
         BlogPost Update(BlogPost blogPost);
         bool Delete(Guid id);
         IEnumerable<TouristObject> GetAllTouristObjects();
+        IEnumerable<TripRoute> GetAllTripRoutes();
     }
 }
