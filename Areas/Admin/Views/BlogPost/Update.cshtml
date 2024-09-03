@@ -53,19 +53,37 @@
                 <span class="text-danger" asp-validation-for="PublishedDate"></span>
             </div>
 
-            <div class="mb-3">
-                <label for="touristObject" class="form-label">Tourist Object</label>
-                @if (ViewBag.TouristObjects != null && ViewBag.TouristObjects.Count > 0)
-                {
-                    <select class="form-select" id="touristObject" asp-for="TouristObjectId" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name", Model.TouristObjectId))">
+            <div class="d-flex justify-content-center mb-3">
+                <div class="btn-group" role="group" aria-label="Type Filter">
+                    <button type="button" class="btn btn-primary" id="selectTouristObject">Tourist Object</button>
+                    <button type="button" class="btn btn-primary" id="selectRoute">Route</button>
+                </div>
+            </div>
+
+            <div id="touristObjectSection" style="display: none;">
+                <div class="mb-3">
+                    <label for="touristObject" class="form-label">Tourist Object</label>
+                    <select class="form-select" id="touristObject" name="TouristObject" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name"))">
                         <option value="">Select a Tourist Object</option>
                     </select>
-                }
-                else
-                {
-                    <p>No Tourist Objects available.</p>
-                }
-                <span class="text-danger" asp-validation-for="TouristObjectId"></span>
+                    <span class="text-danger" asp-validation-for="TouristObject"></span>
+                </div>
+                <div id="touristObjectDetails" style="display: none;">
+                    <input type="text" hidden class="form-control" id="touristObjectId" name="TouristObjectId" />
+                </div>
+            </div>
+
+            <div id="tripRouteSection" style="display: none;">
+                <div class="mb-3">
+                    <label for="tripRoute" class="form-label">Route</label>
+                    <select class="form-select" id="tripRoute" name="TripRoute" asp-items="@(new SelectList(ViewBag.TripRoutes, "Id", "Name"))">
+                        <option value="">Select a Route</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="TripRoute"></span>
+                </div>
+                <div id="tripRouteDetails" style="display: none;">
+                    <input type="text" hidden class="form-control" id="tripRouteId" name="TripRouteId" />
+                </div>
             </div>
 
             <div id="touristObjectDetails" style="display: none;">
@@ -114,15 +132,32 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const selectTouristObjectBtn = document.getElementById('selectTouristObject');
+            const selectRouteBtn = document.getElementById('selectRoute');
+            const touristObjectSection = document.getElementById('touristObjectSection');
+            const tripRouteSection = document.getElementById('tripRouteSection');
             const touristObjectSelect = document.getElementById('touristObject');
             const touristObjectDetails = document.getElementById('touristObjectDetails');
+            const tripRouteSelect = document.getElementById('tripRoute');
+            const tripRouteDetails = document.getElementById('tripRouteDetails');
 
-            function loadTouristObjectDetails(objectId) {
-                if (objectId) {
-                    fetch(`/api/touristObject/${objectId}`)
+            selectTouristObjectBtn.addEventListener('click', function () {
+                touristObjectSection.style.display = 'block';
+                tripRouteSection.style.display = 'none';
+            });
+
+            selectRouteBtn.addEventListener('click', function () {
+                touristObjectSection.style.display = 'none';
+                tripRouteSection.style.display = 'block';
+            });
+
+            touristObjectSelect.addEventListener('change', function () {
+                const selectedObjectId = touristObjectSelect.value;
+                if (selectedObjectId) {
+                    fetch(`/api/touristObject/${selectedObjectId}`)
                         .then(response => response.json())
                         .then(data => {
-                            document.getElementById('id').value = data.id || '';
+                            document.getElementById('touristObjectId').value = data.id || '';
                             document.getElementById('address').value = data.address || '';
                             document.getElementById('latitude').value = data.latitude || '';
                             document.getElementById('longitude').value = data.longitude || '';
@@ -138,12 +173,24 @@
                 } else {
                     touristObjectDetails.style.display = 'none';
                 }
-            }
+            });
 
-            loadTouristObjectDetails(touristObjectSelect.value);
-
-            touristObjectSelect.addEventListener('change', function () {
-                loadTouristObjectDetails(touristObjectSelect.value);
+            tripRouteSelect.addEventListener('change', function () {
+                const selectedRouteId = tripRouteSelect.value;
+                if (selectedRouteId) {
+                    fetch(`/api/route/${selectedRouteId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('tripRouteId').value = data.id || '';
+                            tripRouteDetails.style.display = 'block';
+                        })
+                        .catch(error => {
+                            console.error('Error fetching route data:', error);
+                            tripRouteDetails.style.display = 'none';
+                        });
+                } else {
+                    tripRouteDetails.style.display = 'none';
+                }
             });
         });
 

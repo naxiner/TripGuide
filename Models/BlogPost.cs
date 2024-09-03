@@ -18,8 +18,10 @@ namespace TripGuide.Models
         public Guid UserId { get; set; }
         public ICollection<Tag>? Tags { get; set; }
         public ICollection<Review>? Reviews { get; set; }
-        public Guid TouristObjectId { get; set; }
+        public Guid? TouristObjectId { get; set; }
         public TouristObject? TouristObject { get; set; }
+        public Guid? TripRouteId { get; set; }
+        public TripRoute? TripRoute { get; set; }
         public ICollection<UserBlogPost>? UserBlogPosts { get; set; }
     }
 }
