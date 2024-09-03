@@ -51,6 +51,7 @@ namespace TripGuide.Repositories
                 existingUser.NormalizedEmail = user.NormalizedEmail;
                 existingUser.AvatarImageUrl = user.AvatarImageUrl;
                 existingUser.PhoneNumber = user.PhoneNumber;
+                existingUser.AccountVerified = user.AccountVerified;
 
                 var result = await _userManager.UpdateAsync(existingUser);
                 if (result.Succeeded)

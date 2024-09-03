@@ -10,6 +10,6 @@
         public TimeSpan OpeningTime { get; set; }
         public TimeSpan ClosingTime { get; set; }
 
-        public List<TripRouteTouristObject> TripRouteTouristObjects { get; set; }
+        public List<TripRouteTouristObject>? TripRouteTouristObjects { get; set; }
     }
 }
