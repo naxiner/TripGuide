@@ -23,6 +23,7 @@ namespace TripGuide.Controllers
         private readonly GoogleMapsSettings _googleMapsSettings;
         private readonly TripGuideDbContext _context;
         private readonly IUserRepository _userRepository;
+        private readonly IUserBlogPostRepository _userBlogPostRepository;
 
         public List<BlogPost> Blogs { get; set; }
 
@@ -36,7 +37,8 @@ namespace TripGuide.Controllers
                       UserManager<User> userManager,
                       IOptions<GoogleMapsSettings> googleMapsSettings,
                       TripGuideDbContext context,
-                      IUserRepository userRepository)
+                      IUserRepository userRepository,
+                      IUserBlogPostRepository userBlogPostRepository)
         {
             _logger = logger;
             _blogPostRepository = blogPostRepository;
@@ -46,6 +48,7 @@ namespace TripGuide.Controllers
             _googleMapsSettings = googleMapsSettings.Value;
             _context = context;
             _userRepository = userRepository;
+            _userBlogPostRepository = userBlogPostRepository;   
         }
 
         public IActionResult Index()
@@ -106,12 +109,16 @@ namespace TripGuide.Controllers
                             .FirstOrDefault(tr => tr.Id == blog.TripRouteId);
             }
 
+            var userId = _userManager.GetUserId(User);
+            var canAddReview = _userBlogPostRepository.HasVisited(blog.Id, userId);
+
             var viewModel = new BlogDetailsViewModel
             {
                 BlogPost = blog,
                 Reviews = reviews,
                 TouristObject = touristObject,
-                TripRoute = tripRoute
+                TripRoute = tripRoute,
+                CanAddReview = canAddReview
             };
 
             return View("BlogDetails", viewModel);
