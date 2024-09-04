@@ -248,12 +248,15 @@
                     </div>
                 }
 
-                <div class="mb-3 d-flex justify-content-end">
-                    <button type="button" class="btn btn-dark"
-                            data-bs-toggle="modal" data-bs-target="#addReviewModal">
-                        Add Review
-                    </button>
-                </div>
+                @if (Model.CanAddReview)
+                {
+                    <div class="mb-3 d-flex justify-content-end">
+                        <button type="button" class="btn btn-dark"
+                                data-bs-toggle="modal" data-bs-target="#addReviewModal">
+                            Add Review
+                        </button>
+                    </div>
+                }
 
             </div>
         </div>

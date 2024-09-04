@@ -42,5 +42,11 @@ namespace TripGuide.Repositories
                 .Include(ubp => ubp.BlogPost)
                 .ToList();
         }
+
+        public bool HasVisited(Guid blogId, string userId)
+        {
+            return _context.UserBlogPosts
+                .Any(ubp => ubp.UserId == userId && ubp.BlogPostId == blogId && ubp.Status == "visited");
+        }
     }
 }
