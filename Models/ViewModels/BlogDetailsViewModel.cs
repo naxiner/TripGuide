@@ -7,5 +7,7 @@
 
         public TripRoute? TripRoute { get; set; }
         public TouristObject? TouristObject { get; set; }
+
+        public bool CanAddReview { get; set; }
     }
 }
