@@ -163,6 +163,7 @@ namespace TripGuide.Controllers
 
             existingReview.Content = review.Content;
             existingReview.Rating = review.Rating;
+            existingReview.FeaturedImageUrl = review.FeaturedImageUrl;
 
             _reviewRepository.Update(existingReview);
 

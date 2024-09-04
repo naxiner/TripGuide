@@ -218,6 +218,9 @@ namespace TripGuide.Migrations
                 b.Property<DateTime>("DateAdded")
                     .HasColumnType("datetime2");
 
+                b.Property<string>("FeaturedImageUrl")
+                    .HasColumnType("nvarchar(max)");
+                    
                 b.Property<int>("Rating")
                     .HasColumnType("int");
 
