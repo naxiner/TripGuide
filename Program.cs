@@ -6,7 +6,7 @@ using TripGuide.Repositories;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TripGuide.Utility;
 using TripGuide.Repository;
-using System.Configuration;
+using TripGuide.DbInitializer;
 
 namespace TripGuide
 {
@@ -28,6 +28,7 @@ namespace TripGuide
             
             builder.Services.AddRazorPages();
 
+            builder.Services.AddScoped<IDbInitializer, DbInitializer.DbInitializer>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITouristObjectRepository, TouristObjectRepository>();
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
@@ -48,6 +49,8 @@ namespace TripGuide
                 app.UseHsts();
             }
 
+            SeedDataBase();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -61,6 +64,15 @@ namespace TripGuide
                 pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+            void SeedDataBase()
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                    dbInitializer.Initialize();
+                }
+            }
         }
     }
 }
