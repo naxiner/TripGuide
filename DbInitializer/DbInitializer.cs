@@ -50,7 +50,7 @@ namespace TripGuide.DbInitializer
 
                 User user = _dbContext.Users.FirstOrDefault(
                     u => u.Email == "admin@tripguide.com");
-                _userManager.AddToRoleAsync(user, StaticDetail.Role_User).GetAwaiter().GetResult();
+                _userManager.AddToRoleAsync(user, StaticDetail.Role_Admin).GetAwaiter().GetResult();
             }
 
             return;
