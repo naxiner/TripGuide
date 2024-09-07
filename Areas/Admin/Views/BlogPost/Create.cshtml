@@ -173,8 +173,7 @@
                     fetch(`/api/blogpost/route/${selectedRouteId}`)
                         .then(response => response.json())
                         .then(data => {
-                            routeTouristObjects.innerHTML = ''; // Clear previous tourist objects
-
+                            routeTouristObjects.innerHTML = ''; 
 
                             if (data.touristObjects && Array.isArray(data.touristObjects)) {
                                 data.touristObjects.forEach((obj, index) => {

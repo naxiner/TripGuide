@@ -63,55 +63,20 @@
             <div id="touristObjectSection" style="display: none;">
                 <div class="mb-3">
                     <label for="touristObject" class="form-label">Tourist Object</label>
-                    <select class="form-select" id="touristObject" name="TouristObject" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name"))">
+                    <select class="form-select" id="touristObject" name="TouristObject" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name", Model.TouristObjectId))">
                         <option value="">Select a Tourist Object</option>
                     </select>
                     <span class="text-danger" asp-validation-for="TouristObject"></span>
-                </div>
-                <div id="touristObjectDetails" style="display: none;">
-                    <input type="text" hidden class="form-control" id="touristObjectId" name="TouristObjectId" />
                 </div>
             </div>
 
             <div id="tripRouteSection" style="display: none;">
                 <div class="mb-3">
                     <label for="tripRoute" class="form-label">Route</label>
-                    <select class="form-select" id="tripRoute" name="TripRoute" asp-items="@(new SelectList(ViewBag.TripRoutes, "Id", "Name"))">
+                    <select class="form-select" id="tripRoute" name="TripRoute" asp-items="@(new SelectList(ViewBag.TripRoutes, "Id", "Name", Model.TripRouteId))">
                         <option value="">Select a Route</option>
                     </select>
                     <span class="text-danger" asp-validation-for="TripRoute"></span>
-                </div>
-                <div id="tripRouteDetails" style="display: none;">
-                    <input type="text" hidden class="form-control" id="tripRouteId" name="TripRouteId" />
-                </div>
-            </div>
-
-            <div id="touristObjectDetails" style="display: none;">
-                <div id="touristObjectDetails" style="display: none;">
-                    <input type="text" readonly class="form-control" id="id" asp-for="TouristObjectId">
-                </div>
-                <div class="mb-3">
-                    <input type="text" readonly class="form-control" id="name" style="display: none;">
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <input type="text" readonly class="form-control" id="address">
-                </div>
-                <div class="mb-3">
-                    <label for="latitude" class="form-label">Latitude</label>
-                    <input type="text" readonly class="form-control" id="latitude">
-                </div>
-                <div class="mb-3">
-                    <label for="longitude" class="form-label">Longitude</label>
-                    <input type="text" readonly class="form-control" id="longitude">
-                </div>
-                <div class="mb-3">
-                    <label for="openingTime" class="form-label">Opening Time</label>
-                    <input type="text" readonly class="form-control" id="openingTime">
-                </div>
-                <div class="mb-3">
-                    <label for="closingTime" class="form-label">Closing Time</label>
-                    <input type="text" readonly class="form-control" id="closingTime">
                 </div>
             </div>
 
@@ -136,19 +101,27 @@
             const selectRouteBtn = document.getElementById('selectRoute');
             const touristObjectSection = document.getElementById('touristObjectSection');
             const tripRouteSection = document.getElementById('tripRouteSection');
-            const touristObjectSelect = document.getElementById('touristObject');
-            const touristObjectDetails = document.getElementById('touristObjectDetails');
-            const tripRouteSelect = document.getElementById('tripRoute');
-            const tripRouteDetails = document.getElementById('tripRouteDetails');
+
+            if (document.getElementById('touristObject').value) {
+                touristObjectSection.style.display = 'block';
+                selectTouristObjectBtn.classList.add('active');
+            } else if (document.getElementById('tripRoute').value) {
+                tripRouteSection.style.display = 'block';
+                selectRouteBtn.classList.add('active');
+            }
 
             selectTouristObjectBtn.addEventListener('click', function () {
                 touristObjectSection.style.display = 'block';
                 tripRouteSection.style.display = 'none';
+                selectTouristObjectBtn.classList.add('active');
+                selectRouteBtn.classList.remove('active');
             });
 
             selectRouteBtn.addEventListener('click', function () {
                 touristObjectSection.style.display = 'none';
                 tripRouteSection.style.display = 'block';
+                selectRouteBtn.classList.add('active');
+                selectTouristObjectBtn.classList.remove('active');
             });
 
             touristObjectSelect.addEventListener('change', function () {
