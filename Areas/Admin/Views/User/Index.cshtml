@@ -22,6 +22,7 @@
                     <td>UserName</td>
                     <td>Email</td>
                     <td>Phone</td>
+                    <td>Verified</td>
                     <td>Block/Unblock</td>
                     <td></td>
                 </tr>
@@ -35,6 +36,16 @@
                         <td>@user.UserName</td>
                         <td>@user.Email</td>
                         <td>@user.PhoneNumber</td>
+                        <td class="text-center">
+                            @if (user.AccountVerified)
+                            {
+                                <i class="bi bi-check-lg"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-x-lg"></i>
+                            }
+                        </td>
                         <td>
                             @if (!user.IsBanned)
                             {
