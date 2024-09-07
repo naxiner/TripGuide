@@ -154,12 +154,16 @@ namespace TripGuide.Controllers
                 existingBlogPost.TripRouteId = updatedBlogPost.TripRouteId;
                 existingBlogPost.Reviews = updatedBlogPost.Reviews;
 
+                existingBlogPost.Tags.Clear();
                 existingBlogPost.Tags = tagList.Select(x => new Tag() { Name = x }).ToList();
 
                 blogPostRepository.Update(existingBlogPost);
 
                 return RedirectToAction("List");
             }
+
+            ViewBag.TouristObjects = blogPostRepository.GetAllTouristObjects();
+            ViewBag.TripRoutes = blogPostRepository.GetAllTripRoutes();
 
             return View(updatedBlogPost);
         }

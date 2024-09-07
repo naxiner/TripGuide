@@ -63,7 +63,7 @@
             <div id="touristObjectSection" style="display: none;">
                 <div class="mb-3">
                     <label for="touristObject" class="form-label">Tourist Object</label>
-                    <select class="form-select" id="touristObject" name="TouristObject" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name", Model.TouristObjectId))">
+                    <select class="form-select" id="touristObject" name="TouristObjectId" asp-items="@(new SelectList(ViewBag.TouristObjects, "Id", "Name", Model.TouristObjectId))">
                         <option value="">Select a Tourist Object</option>
                     </select>
                     <span class="text-danger" asp-validation-for="TouristObject"></span>
@@ -73,11 +73,40 @@
             <div id="tripRouteSection" style="display: none;">
                 <div class="mb-3">
                     <label for="tripRoute" class="form-label">Route</label>
-                    <select class="form-select" id="tripRoute" name="TripRoute" asp-items="@(new SelectList(ViewBag.TripRoutes, "Id", "Name", Model.TripRouteId))">
+                    <select class="form-select" id="tripRoute" name="TripRouteId" asp-items="@(new SelectList(ViewBag.TripRoutes, "Id", "Name", Model.TripRouteId))">
                         <option value="">Select a Route</option>
                     </select>
                     <span class="text-danger" asp-validation-for="TripRoute"></span>
                 </div>
+            </div>
+
+            <div id="touristObjectDetails" style="display: none;">
+                <h4>Tourist Object Details</h4>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="latitude" class="form-label">Latitude</label>
+                    <input type="text" class="form-control" id="latitude" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="longitude" class="form-label">Longitude</label>
+                    <input type="text" class="form-control" id="longitude" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="openingTime" class="form-label">Opening Time</label>
+                    <input type="text" class="form-control" id="openingTime" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="closingTime" class="form-label">Closing Time</label>
+                    <input type="text" class="form-control" id="closingTime" readonly>
+                </div>
+            </div>
+
+            <div id="routeDetails" style="display: none;">
+                <h4>Route Tourist Objects</h4>
+                <div id="routeTouristObjects"></div>
             </div>
 
             <div class="mb-3">
@@ -101,18 +130,97 @@
             const selectRouteBtn = document.getElementById('selectRoute');
             const touristObjectSection = document.getElementById('touristObjectSection');
             const tripRouteSection = document.getElementById('tripRouteSection');
+            const touristObjectSelect = document.getElementById('touristObject');
+            const touristObjectDetails = document.getElementById('touristObjectDetails');
+            const tripRouteSelect = document.getElementById('tripRoute');
+            const routeTouristObjects = document.getElementById('routeTouristObjects');
+            const routeDetails = document.getElementById('routeDetails');
 
-            if (document.getElementById('touristObject').value) {
-                touristObjectSection.style.display = 'block';
-                selectTouristObjectBtn.classList.add('active');
-            } else if (document.getElementById('tripRoute').value) {
-                tripRouteSection.style.display = 'block';
-                selectRouteBtn.classList.add('active');
+            function clearTouristObjectFields() {
+                document.getElementById('address').value = '';
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                document.getElementById('openingTime').value = '';
+                document.getElementById('closingTime').value = '';
+                touristObjectSelect.selectedIndex = 0;
+                touristObjectDetails.style.display = 'none';
             }
+
+            function clearRouteFields() {
+                tripRouteSelect.selectedIndex = 0;
+                routeTouristObjects.innerHTML = '';
+                routeDetails.style.display = 'none';
+            }
+
+            function initializePage() {
+                const selectedObjectId = touristObjectSelect.value;
+                const selectedRouteId = tripRouteSelect.value;
+
+                if (selectedObjectId) {
+                    touristObjectSection.style.display = 'block';
+                    tripRouteSection.style.display = 'none';
+                    selectTouristObjectBtn.classList.add('active');
+                    selectRouteBtn.classList.remove('active');
+                    fetchTouristObjectData(selectedObjectId);
+                } else if (selectedRouteId) {
+                    touristObjectSection.style.display = 'none';
+                    tripRouteSection.style.display = 'block';
+                    selectRouteBtn.classList.add('active');
+                    selectTouristObjectBtn.classList.remove('active');
+                    fetchRouteData(selectedRouteId);
+                }
+            }
+
+            function fetchTouristObjectData(objectId) {
+                fetch(`/api/touristObject/${objectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('address').value = data.address || '';
+                        document.getElementById('latitude').value = data.latitude || '';
+                        document.getElementById('longitude').value = data.longitude || '';
+                        document.getElementById('openingTime').value = data.openingTime || '';
+                        document.getElementById('closingTime').value = data.closingTime || '';
+                        touristObjectDetails.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching tourist object data:', error);
+                        touristObjectDetails.style.display = 'none';
+                    });
+            }
+
+            function fetchRouteData(routeId) {
+                fetch(`/api/blogpost/route/${routeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        routeTouristObjects.innerHTML = '';
+                        if (data.touristObjects && Array.isArray(data.touristObjects)) {
+                            data.touristObjects.forEach((obj, index) => {
+                                const div = document.createElement('div');
+                                div.classList.add('mb-3');
+                                div.innerHTML = `
+                                    <label class="form-label">Tourist Object ${index + 1}</label>
+                                    <input type="text" class="form-control" value="${obj.name}" readonly>
+                                `;
+                                routeTouristObjects.appendChild(div);
+                            });
+                        } else {
+                            routeTouristObjects.innerHTML = '<p>No tourist objects found for this route.</p>';
+                        }
+                        routeDetails.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching route data:', error);
+                        routeTouristObjects.innerHTML = '<p>Error loading tourist objects.</p>';
+                        routeDetails.style.display = 'none';
+                    });
+            }
+
+            initializePage();
 
             selectTouristObjectBtn.addEventListener('click', function () {
                 touristObjectSection.style.display = 'block';
                 tripRouteSection.style.display = 'none';
+                clearRouteFields();
                 selectTouristObjectBtn.classList.add('active');
                 selectRouteBtn.classList.remove('active');
             });
@@ -120,6 +228,7 @@
             selectRouteBtn.addEventListener('click', function () {
                 touristObjectSection.style.display = 'none';
                 tripRouteSection.style.display = 'block';
+                clearTouristObjectFields();
                 selectRouteBtn.classList.add('active');
                 selectTouristObjectBtn.classList.remove('active');
             });
@@ -127,72 +236,48 @@
             touristObjectSelect.addEventListener('change', function () {
                 const selectedObjectId = touristObjectSelect.value;
                 if (selectedObjectId) {
-                    fetch(`/api/touristObject/${selectedObjectId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('touristObjectId').value = data.id || '';
-                            document.getElementById('address').value = data.address || '';
-                            document.getElementById('latitude').value = data.latitude || '';
-                            document.getElementById('longitude').value = data.longitude || '';
-                            document.getElementById('openingTime').value = data.openingTime || '';
-                            document.getElementById('closingTime').value = data.closingTime || '';
-
-                            touristObjectDetails.style.display = 'block';
-                        })
-                        .catch(error => {
-                            console.error('Error fetching tourist object data:', error);
-                            touristObjectDetails.style.display = 'none';
-                        });
+                    fetchTouristObjectData(selectedObjectId);
                 } else {
-                    touristObjectDetails.style.display = 'none';
+                    clearTouristObjectFields();
                 }
             });
 
             tripRouteSelect.addEventListener('change', function () {
                 const selectedRouteId = tripRouteSelect.value;
                 if (selectedRouteId) {
-                    fetch(`/api/route/${selectedRouteId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('tripRouteId').value = data.id || '';
-                            tripRouteDetails.style.display = 'block';
-                        })
-                        .catch(error => {
-                            console.error('Error fetching route data:', error);
-                            tripRouteDetails.style.display = 'none';
-                        });
+                    fetchRouteData(selectedRouteId);
                 } else {
-                    tripRouteDetails.style.display = 'none';
+                    clearRouteFields();
                 }
             });
+
+            var editor = new FroalaEditor('#content');
+
+            const featuredImageUploadElement = document.getElementById('featuredImageUpload');
+            const featuredImageUrl = document.getElementById('featuredImageUrl');
+            const featuredImageDisplay = document.getElementById('featuredImageDisplay');
+
+            async function uploadFeaturedImage(e) {
+                console.log(e.target.files[0]);
+
+                let data = new FormData();
+                data.append('file', e.target.files[0]);
+
+                await fetch('/api/image', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': '*/*',
+                    },
+                    body: data
+                }).then(response => response.json())
+                    .then(result => {
+                        featuredImageUrl.value = result.link;
+                        featuredImageDisplay.style.display = 'block';
+                        featuredImageDisplay.src = result.link;
+                    });
+            }
+
+            featuredImageUploadElement.addEventListener('change', uploadFeaturedImage);
         });
-
-        var editor = new FroalaEditor('#content');
-
-        const featuredImageUploadElement = document.getElementById('featuredImageUpload');
-        const featuredImageUrl = document.getElementById('featuredImageUrl');
-        const featuredImageDisplay = document.getElementById('featuredImageDisplay');
-
-        async function uploadFeaturedImage(e) {
-            console.log(e.target.files[0]);
-
-            let data = new FormData();
-            data.append('file', e.target.files[0]);
-
-            await fetch('/api/image', {
-                method: 'POST',
-                headers: {
-                    'Accept': '*/*',
-                },
-                body: data
-            }).then(response => response.json())
-                .then(result => {
-                    featuredImageUrl.value = result.link;
-                    featuredImageDisplay.style.display = 'block';
-                    featuredImageDisplay.src = result.link;
-                });
-        }
-
-        featuredImageUploadElement.addEventListener('change', uploadFeaturedImage);
     </script>
 }
