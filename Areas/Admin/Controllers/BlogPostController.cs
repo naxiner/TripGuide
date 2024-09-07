@@ -154,12 +154,16 @@ namespace TripGuide.Controllers
                 existingBlogPost.TripRouteId = updatedBlogPost.TripRouteId;
                 existingBlogPost.Reviews = updatedBlogPost.Reviews;
 
+                existingBlogPost.Tags.Clear();
                 existingBlogPost.Tags = tagList.Select(x => new Tag() { Name = x }).ToList();
 
                 blogPostRepository.Update(existingBlogPost);
 
                 return RedirectToAction("List");
             }
+
+            ViewBag.TouristObjects = blogPostRepository.GetAllTouristObjects();
+            ViewBag.TripRoutes = blogPostRepository.GetAllTripRoutes();
 
             return View(updatedBlogPost);
         }
@@ -181,5 +185,33 @@ namespace TripGuide.Controllers
             var blogPosts = blogPostRepository.GetAll();
             return View(blogPosts);
         }
+
+        [HttpGet("api/blogpost/route/{id}")]
+        public IActionResult GetRoute(Guid id)
+        {
+            var route = context.TripRoutes
+                .Include(r => r.TripRouteTouristObjects)
+                .ThenInclude(rto => rto.TouristObject)
+                .FirstOrDefault(r => r.Id == id);
+
+            if (route == null)
+            {
+                return NotFound();
+            }
+
+            var routeData = new
+            {
+                id = route.Id,
+                name = route.Name,
+                touristObjects = route.TripRouteTouristObjects.Select(rto => new
+                {
+                    id = rto.TouristObject.Id,
+                    name = rto.TouristObject.Name
+                }).ToList()
+            };
+
+            return Json(routeData);
+        }
+
     }
 }
