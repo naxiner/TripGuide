@@ -95,28 +95,12 @@
             <div id="tripRouteSection" style="display: none;">
                 <div class="mb-3">
                     <label for="tripRoute" class="form-label">Route</label>
-                    <select class="form-select" id="tripRoute" name="TripRoute" asp-for="TripRoute" asp-items="@(new SelectList(ViewBag.TripRoute, "Id", "Name"))">
+                    <select class="form-select" id="tripRoute" name="TripRouteId" asp-for="TripRouteId" asp-items="@(new SelectList(ViewBag.TripRoute, "Id", "Name"))">
                         <option value="">Select a Route</option>
                     </select>
-                    <span class="text-danger" asp-validation-for="TripRoute"></span>
+                    <span class="text-danger" asp-validation-for="TripRouteId"></span>
                 </div>
-                <div id="tripRouteDetails" style="display: none;">
-                    <input type="text" hidden class="form-control" id="id" name="TripRouteId" asp-for="TripRouteId">
-                    <input type="text" hidden class="form-control" id="name" style="display: none;">
-                    @* @for (int i = 0; i < Model.TripRoute.TripRouteTouristObjects.Count; i++)
-                    {
-                        <div class="mb-3">
-                            <label for="touristObject@i" class="form-label">Tourist Object @i + 1</label>
-                            <select class="form-select" id="touristObject@i" name="TripRoute.TripRouteTouristObjects[@i].TouristObjectId" asp-for="TripRoute.TripRouteTouristObjects[@i].TouristObjectId">
-                                <option value="">Select a Tourist Object</option>
-                                @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
-                                {
-                                    <option value="@obj.Id">@obj.Name</option>
-                                }
-                            </select>
-                            <span class="text-danger" asp-validation-for="TouristObjectIds[@i]"></span>
-                        </div>
-                    } *@
+                <div id="routeTouristObjects">
                 </div>
             </div>
 
@@ -141,9 +125,10 @@
             const selectTouristObjectBtn = document.getElementById('selectTouristObject');
             const selectRouteBtn = document.getElementById('selectRoute');
             const touristObjectSection = document.getElementById('touristObjectSection');
-            const routeSelect = document.getElementById('tripRoute');
             const routeDetails = document.getElementById('tripRouteDetails');
             const routeSection = document.getElementById('tripRouteSection');
+            const routeSelect = document.getElementById('tripRoute');
+            const routeTouristObjects = document.getElementById('routeTouristObjects');
 
             selectTouristObjectBtn.addEventListener('click', function () {
                 touristObjectSection.style.display = 'block';
@@ -181,33 +166,54 @@
             });
 
             routeSelect.addEventListener('change', function () {
+                debugger;
                 const selectedRouteId = routeSelect.value;
+
                 if (selectedRouteId) {
-                    fetch(`/api/route/${selectedRouteId}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
+                    fetch(`/api/blogpost/route/${selectedRouteId}`)
+                        .then(response => response.json())
                         .then(data => {
-                            console.log('Received route data:', data);
-                            const routeIdElement = document.getElementById('tr_id');
-                            const routeNameElement = document.getElementById('name');
+                            routeTouristObjects.innerHTML = ''; // Clear previous tourist objects
 
-                            if (routeIdElement) routeIdElement.value = data.id || '';
-                            if (routeNameElement) routeNameElement.value = data.name || '';
 
-                            if (routeDetails) routeDetails.style.display = 'block';
+                            if (data.touristObjects && Array.isArray(data.touristObjects)) {
+                                data.touristObjects.forEach((obj, index) => {
+                                    const div = document.createElement('div');
+                                    div.classList.add('mb-3');
+                                    div.innerHTML = `
+                                            <label class="form-label">Tourist Object ${index + 1}</label>
+                                            <input type="text" class="form-control" value="${obj.name}" readonly>
+                                            <input type="hidden" name="TouristObjectIds" value="${obj.id}">
+                                        `;
+                                    routeTouristObjects.appendChild(div);
+                                });
+                            } else {
+                                console.error('Invalid touristObjects data:', data);
+                                routeTouristObjects.innerHTML = '<p>No tourist objects found for this route.</p>';
+                            }
                         })
                         .catch(error => {
                             console.error('Error fetching route data:', error);
-                            if (routeDetails) routeDetails.style.display = 'none';
+                            routeTouristObjects.innerHTML = '<p>Error loading tourist objects.</p>';
                         });
                 } else {
-                    if (routeDetails) routeDetails.style.display = 'none';
+                    routeTouristObjects.innerHTML = '';
                 }
             });
+
+            function populateRouteTouristObjects(touristObjects) {
+                routeDetails.innerHTML = '';
+                touristObjects.forEach((obj, index) => {
+                    const div = document.createElement('div');
+                    div.classList.add('mb-3');
+                    div.innerHTML = `
+                                        <label class="form-label">Tourist Object ${index + 1}</label>
+                                        <input type="text" class="form-control" value="${obj.touristObject.name}" readonly>
+                                        <input type="hidden" name="TouristObjectIds" value="${obj.touristObjectId}">
+                                    `;
+                    routeDetails.appendChild(div);
+                });
+            }
 
         });
 
