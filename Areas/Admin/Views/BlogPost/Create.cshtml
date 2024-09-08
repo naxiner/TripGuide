@@ -107,11 +107,12 @@
             <div class="mb-3">
                 <label for="tags" class="form-label">Tags (comma separated)</label>
                 <input type="text" class="form-control" id="tags" asp-for="Tags" />
+                <span id="tagError" class="text-danger" style="display:none;"></span>
                 <span class="text-danger" asp-validation-for="Tags"></span>
             </div>
 
             <div class="mb-3">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-primary" type="submit" id="submitButton">Submit</button>
             </div>
         </form>
     </div>
@@ -166,7 +167,6 @@
             });
 
             routeSelect.addEventListener('change', function () {
-                debugger;
                 const selectedRouteId = routeSelect.value;
 
                 if (selectedRouteId) {
@@ -243,5 +243,22 @@
         }
 
         featuredImageUploadElement.addEventListener('change', uploadFeaturedImage);
+
+        document.getElementById('tags').addEventListener('input', function (event) {
+            const maxLength = 16;
+            const tags = event.target.value.split(',');
+            const errorElement = document.getElementById('tagError');
+            const submitButton = document.getElementById('submitButton');
+            const invalidTags = tags.filter(tag => tag.trim().length > maxLength);
+
+            if (invalidTags.length > 0) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = `Tags must be 16 characters or less. Invalid tags: ${invalidTags.join(', ')}`;
+                submitButton.disabled = true;
+            } else {
+                errorElement.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        });
     </script>
 }
