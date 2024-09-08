@@ -28,7 +28,7 @@ namespace TripGuide.Controllers
         public IFormFile? FeaturedImage { get; set; }
 
         [BindProperty]
-        public string Tags { get; set; }
+        public string? Tags { get; set; }
 
         public BlogPostController(IBlogPostRepository blogPostRepository, IImageRepository imageRepository, ITouristObjectRepository touristObjectRepository, TripGuideDbContext context, ITripRouteRepository routeRepository)
         {
@@ -66,11 +66,16 @@ namespace TripGuide.Controllers
         [HttpPost]
         public IActionResult Add()
         {
-            var tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+            List<string> tagList = new List<string>();
 
-            if (tagList.Count > 10)
+            if (!string.IsNullOrEmpty(Tags))
             {
-                ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+                tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+                
+                if (tagList.Count > 10)
+                {
+                    ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+                }
             }
 
             if (ModelState.IsValid)
@@ -128,11 +133,16 @@ namespace TripGuide.Controllers
         [HttpPost]
         public IActionResult Update(Guid id, BlogPost updatedBlogPost)
         {
-            var tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+            List<string> tagList = new List<string>();
 
-            if (tagList.Count > 10)
+            if (!string.IsNullOrEmpty(Tags))
             {
-                ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+                tagList = Tags.Split(',').Select(x => x.Trim()).ToList();
+
+                if (tagList.Count > 10)
+                {
+                    ModelState.AddModelError("Tags", "You cannot add more than 10 tags.");
+                }
             }
 
             if (ModelState.IsValid)
