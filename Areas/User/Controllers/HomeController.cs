@@ -180,7 +180,7 @@ namespace TripGuide.Controllers
         [HttpPost]
         [Area("User")]
         [Route("blog/{urlHandle}/delete-review")]
-        public IActionResult DeleteReview(string urlHandle, Guid reviewId)
+        public async Task<IActionResult> DeleteReview(string urlHandle, Guid reviewId)
         {
             var review = _reviewRepository.GetById(reviewId);
             if (review == null)
@@ -188,8 +188,16 @@ namespace TripGuide.Controllers
                 return NotFound();
             }
 
-            var user = _userManager.GetUserAsync(User).Result;
-            if (user == null || user.Id != review.UserId)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isModerator = await _userManager.IsInRoleAsync(user, "Moderator");
+
+            if (user.Id != review.UserId && !isAdmin && !isModerator)
             {
                 return Unauthorized();
             }
