@@ -187,7 +187,7 @@
                                 <small>Added on @review.DateAdded.ToShortDateString()</small>
                             </div>
                             <div class="col text-end">
-                                @if (User.Identity.Name == review.UserName || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                                @if (User.Identity.Name == review.UserName)
                                 {
                                     <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editReviewModal-@review.Id">Edit</button>
                                 }
