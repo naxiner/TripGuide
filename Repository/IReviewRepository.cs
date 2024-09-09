@@ -9,5 +9,6 @@ namespace TripGuide.Repository
         void Delete(Guid reviewId);
         IEnumerable<Review> GetByBlogPostId(Guid blogPostId);
         Review GetById(Guid reviewId);
+        public IEnumerable<Review> GetAllByUserId(string userId);
     }
 }

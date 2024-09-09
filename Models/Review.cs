@@ -10,6 +10,7 @@ namespace TripGuide.Models
         public DateTime DateAdded { get; set; }
         public string UserId { get; set; }
         public Guid BlogPostId { get; set; }
+        public BlogPost BlogPost { get; set; }
 
         [NotMapped]
         public string? UserName { get; set; }
