@@ -18,17 +18,20 @@ namespace TripGuide.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IBlogPostRepository _blogPostRepository;
         private readonly IUserBlogPostRepository _userBlogPostRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly UserManager<User> _userManager;
 
         public ProfileController(
-            IUserRepository userRepository, 
+            IUserRepository userRepository,
             IBlogPostRepository blogPostRepository,
             IUserBlogPostRepository userBlogPostRepository,
+            IReviewRepository reviewRepository,
             UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _blogPostRepository = blogPostRepository;
             _userBlogPostRepository = userBlogPostRepository;
+            _reviewRepository = reviewRepository;
             _userManager = userManager;
         }
 
@@ -38,11 +41,13 @@ namespace TripGuide.Controllers
             var user = await _userRepository.GetAsync(userId);
 
             var collections = _userBlogPostRepository.GetAllUserBlogs(userId);
+            var reviews = _reviewRepository.GetAllByUserId(userId);
 
             var model = new UserProfileViewModel
             {
                 User = user,
                 Collections = collections.ToList(),
+                Reviews = reviews.ToList()
             };
 
             return View(model);
