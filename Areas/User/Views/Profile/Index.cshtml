@@ -52,6 +52,55 @@
                 }
             </div>
         </div>
+        <div class="mt-5 col-12 col-lg-10 mx-auto">
+            <h2 class="mb-4 text-center">Your Reviews</h2>
+
+            @foreach (var review in Model.Reviews)
+            {
+                <div class="mb-3 p-3 bg-light rounded">
+                    <div class="row mb-3">
+                        <div class="col text-start text-secondary">
+                            <small>@review.UserName</small>
+                        </div>
+                        <div class="col text-end text-warning">
+                            <span>
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    if (i < review.Rating)
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
+                                }
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 d-flex justify-content-between">
+                        <strong class="review-content">@review.Content</strong>
+                    </div>
+
+                    @if (review.FeaturedImageUrl != null)
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@review.FeaturedImageUrl" id="featuredImageDisplay" style="width:300px" />
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col text-start text-secondary">
+                            <small>Added on @review.DateAdded.ToShortDateString()</small>
+                        </div>
+                        <div class="col text-end">
+                            <a asp-area="User" asp-controller="Home" asp-action="BlogDetails" asp-route-urlHandle="@review.BlogPost.UrlHandle" class="btn btn-link">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>
 

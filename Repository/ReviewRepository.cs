@@ -43,5 +43,10 @@ namespace TripGuide.Repository
         {
             return tripGuideDbContext.Reviews.Find(reviewId);
         }
+
+        public IEnumerable<Review> GetAllByUserId(string userId)
+        {
+            return tripGuideDbContext.Reviews.Where(r => r.UserId == userId).ToList();
+        }
     }
 }
