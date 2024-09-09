@@ -29,7 +29,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="User" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        @if (User.IsInRole(StaticDetail.Role_Admin))
+                        @if (User.IsInRole(StaticDetail.Role_Admin) || User.IsInRole(StaticDetail.Role_Moderator))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -48,10 +48,13 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="BlogPost" asp-action="List">Blog Posts</a>
                                     </li>
-                                    <li class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Users</a>
-                                    </li>
+                                    @if (User.IsInRole(StaticDetail.Role_Admin))
+                                    {
+                                        <li class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Users</a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                         }
