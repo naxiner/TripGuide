@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using TripGuide.Data;
 using TripGuide.Models;
 using TripGuide.Repositories;
@@ -15,16 +16,21 @@ namespace TripGuide.Controllers
         private readonly TripGuideDbContext context;
         private readonly ITripRouteRepository tripRouteRepository;
         private readonly ITouristObjectRepository touristObjectRepository;
+        private readonly GoogleMapsSettings googleMapsSettings;
 
         [BindProperty]
         public TripRoute TripRoute { get; set; }
         public List<Guid> TouristObjectIds { get; set; }
 
-        public TripRouteController(TripGuideDbContext context, ITripRouteRepository tripRouteRepository, ITouristObjectRepository touristObjectRepository)
+        public TripRouteController(TripGuideDbContext context, 
+            ITripRouteRepository tripRouteRepository, 
+            ITouristObjectRepository touristObjectRepository, 
+            IOptions<GoogleMapsSettings> googleMapsSettings)
         {
             this.context = context;
             this.tripRouteRepository = tripRouteRepository;
             this.touristObjectRepository = touristObjectRepository;
+            this.googleMapsSettings = googleMapsSettings.Value;
         }
 
         public IActionResult Index()
@@ -36,6 +42,8 @@ namespace TripGuide.Controllers
         {
             var touristObjects = touristObjectRepository.GetAll().ToList();
             ViewBag.TouristObjects = touristObjects;
+            ViewBag.GoogleMapsApiKey = googleMapsSettings.ApiKey;
+
             return View();
         }
 
@@ -59,6 +67,8 @@ namespace TripGuide.Controllers
             }
 
             ViewBag.TouristObjects = touristObjectRepository.GetAll();
+            ViewBag.GoogleMapsApiKey = googleMapsSettings.ApiKey;
+
             return View("Create");
         }
 
@@ -70,7 +80,6 @@ namespace TripGuide.Controllers
                 return NotFound();
             }
 
-            // Убедитесь, что коллекция инициализирована
             tripRoute.TripRouteTouristObjects = tripRoute.TripRouteTouristObjects ?? new List<TripRouteTouristObject>();
 
             ViewBag.TouristObjects = touristObjectRepository.GetAll();
@@ -81,6 +90,7 @@ namespace TripGuide.Controllers
                 .ToList();
 
             ViewBag.SelectedTouristObjectIds = selectedTouristObjectIds;
+            ViewBag.GoogleMapsApiKey = googleMapsSettings.ApiKey;
 
             return View(tripRoute);
         }
@@ -121,6 +131,8 @@ namespace TripGuide.Controllers
             }
 
             ViewBag.TouristObjects = touristObjectRepository.GetAll();
+            ViewBag.GoogleMapsApiKey = googleMapsSettings.ApiKey;
+
             return View(tripRoute);
         }
 
@@ -157,6 +169,5 @@ namespace TripGuide.Controllers
             };
             return Json(routeData);
         }
-
     }
 }
