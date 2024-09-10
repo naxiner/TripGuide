@@ -190,11 +190,17 @@
                                 <small>Added on @review.DateAdded.ToShortDateString()</small>
                             </div>
                             <div class="col text-end">
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editReviewModal-@review.Id">Edit</button>
-                                <form method="post" asp-action="DeleteReview" asp-route-urlHandle="@Model.BlogPost.UrlHandle" class="d-inline-block">
-                                    <input type="hidden" name="reviewId" value="@review.Id" />
-                                    <button type="submit" class="btn btn-link text-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
-                                </form>
+                                @if (User.Identity.Name == review.UserName)
+                                {
+                                    <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editReviewModal-@review.Id">Edit</button>
+                                }
+                                @if (User.Identity.Name == review.UserName || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                                {
+                                    <form method="post" asp-action="DeleteReview" asp-route-urlHandle="@Model.BlogPost.UrlHandle" class="d-inline-block">
+                                        <input type="hidden" name="reviewId" value="@review.Id" />
+                                        <button type="submit" class="btn btn-link text-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>
+                                    </form>
+                                }
                             </div>
                         </div>
 
