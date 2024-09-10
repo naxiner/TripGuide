@@ -60,7 +60,7 @@
                                                     Visited
                                                 </label>
                                             </div>
-                                            
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -125,7 +125,7 @@
                     </div>
                 }
 
-                @if (Model.TripRoute != null)
+                @if (Model != null && Model.TripRoute != null)
                 {
                     <div class="mt-4 mb-3 p-3 bg-light rounded">
                         <h4 class="mb-3">About the Trip Route</h4>
@@ -142,6 +142,9 @@
                                 </li>
                             }
                         </ul>
+                    </div>
+                    <div>
+                        <div id="routeMap" style="height: 400px; width: 100%;"></div>
                     </div>
                 }
 
@@ -394,7 +397,7 @@ else
         const featuredImageUploadElement_add = document.getElementById('featuredImageUpload-add');
         const featuredImageUrl_add = document.getElementById('featuredImageUrl-add');
         const featuredImageDisplay_add = document.getElementById('featuredImageDisplay-add');
-        
+
         async function uploadFeaturedImage_add(e) {
             console.log(e.target.files[0]);
 
@@ -441,5 +444,104 @@ else
             const reviewId = element.id.replace('featuredImageUpload-edit-', '');
             element.addEventListener('change', (e) => uploadFeaturedImage_edit(e, reviewId));
         });
+
+        let routeMap, directionsRenderer;
+        const waypoints = @Html.Raw(Json.Serialize(Model.TripRoute.TripRouteTouristObjects.Select(rto => new
+            {
+                lat = rto.TouristObject.Latitude,
+                lng = rto.TouristObject.Longitude
+            })));
+
+        function initRouteMap() {
+            routeMap = new google.maps.Map(document.getElementById("routeMap"), {
+                center: { lat: waypoints[0].lat, lng: waypoints[0].lng },
+                zoom: 10,
+                mapId: "4504f8b37365c3d0",
+            });
+
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: routeMap,
+                suppressMarkers: true
+            });
+
+            updateRouteMap();
+        }
+
+        function updateRouteMap() {
+            if (directionsRenderer) {
+                directionsRenderer.setMap(null);
+            }
+
+            if (window.markers) {
+                window.markers.forEach(marker => marker.setMap(null));
+            }
+
+            window.markers = [];
+
+            if (waypoints.length < 2) return;
+
+            const directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: routeMap,
+                suppressMarkers: true
+            });
+
+            const origin = waypoints[0];
+            const destination = waypoints[waypoints.length - 1];
+            const waypointsForRequest = waypoints.slice(1, -1).map(wp => ({
+                location: new google.maps.LatLng(wp.lat, wp.lng),
+                stopover: true
+            }));
+
+            const request = {
+                origin: new google.maps.LatLng(origin.lat, origin.lng),
+                destination: new google.maps.LatLng(destination.lat, destination.lng),
+                waypoints: waypointsForRequest,
+                optimizeWaypoints: true,
+                travelMode: google.maps.TravelMode.WALKING
+            };
+
+            directionsService.route(request, function (result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+
+                    const route = result.routes[0];
+                    route.waypoint_order.forEach((waypointIndex, i) => {
+                        const waypoint = waypoints[waypointIndex + 1];
+                        const marker = new google.maps.Marker({
+                            position: { lat: waypoint.lat, lng: waypoint.lng },
+                            map: routeMap,
+                            label: (i + 2).toString(),
+                            title: `Point ${i + 2}`
+                        });
+                        window.markers.push(marker);
+                    });
+
+                    const startMarker = new google.maps.Marker({
+                        position: { lat: origin.lat, lng: origin.lng },
+                        map: routeMap,
+                        label: '1',
+                        title: 'Start Point'
+                    });
+                    window.markers.push(startMarker);
+
+                    const endMarker = new google.maps.Marker({
+                        position: { lat: destination.lat, lng: destination.lng },
+                        map: routeMap,
+                        label: waypoints.length.toString(),
+                        title: 'End Point'
+                    });
+                    window.markers.push(endMarker);
+                }
+            });
+        }
+
+        (function loadGoogleMapsAPI() {
+            const script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&callback=initRouteMap';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
     </script>
 }

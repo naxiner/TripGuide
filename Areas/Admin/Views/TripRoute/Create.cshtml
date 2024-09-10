@@ -8,44 +8,49 @@
 
 <div>
     <div class="container">
-        <form asp-action="Add" method="post">
-            <div class="mb-3">
-                <label for="routeName" class="form-label">Route Name</label>
-                <input type="text" required class="form-control" id="routeName" asp-for="Name">
-                <span class="text-danger" asp-validation-for="Name"></span>
-            </div>
+        <form asp-action="Add" method="post" onsubmit="convertCoordinates()">
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label for="routeName" class="form-label">Route Name</label>
+                        <input type="text" required class="form-control" id="routeName" asp-for="Name">
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
 
-            <div id="touristObjectContainer">
-                <div class="mb-3">
-                    <label for="touristObject1" class="form-label">Tourist Object 1</label>
-                    <select class="form-select" id="touristObject1" name="TouristObjectIds[0]">
+                    <div id="touristObjectContainer">
+                        <div class="mb-3">
+                            <label for="touristObject1" class="form-label">Tourist Object 1</label>
+                            <select class="form-select" id="touristObject1" name="TouristObjectIds[0]" onchange="handleTouristObjectChange()">
+                                <option value="">Select a Tourist Object</option>
+                                @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
+                                {
+                                    <option value="@obj.Id" data-lat="@obj.Latitude" data-lng="@obj.Longitude">@obj.Name</option>
+                                }
+                            </select>
+                            <span class="text-danger" asp-validation-for="TripRouteTouristObjects[0]"></span>
+                        </div>
 
-                        <option value="">Select a Tourist Object</option>
-                        @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
-                        {
-                            <option value="@obj.Id">@obj.Name</option>
-                        }
-                    </select>
-                    <span class="text-danger" asp-validation-for="TripRouteTouristObjects[0]"></span>
+                        <div class="mb-3">
+                            <label for="touristObject2" class="form-label">Tourist Object 2</label>
+                            <select class="form-select" id="touristObject2" name="TouristObjectIds[1]" onchange="handleTouristObjectChange()">
+                                <option value="">Select a Tourist Object</option>
+                                @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
+                                {
+                                    <option value="@obj.Id" data-lat="@obj.Latitude" data-lng="@obj.Longitude">@obj.Name</option>
+                                }
+                            </select>
+                            <span class="text-danger" asp-validation-for="TripRouteTouristObjects[1]"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-secondary" id="addObjectButton">Add Another Tourist Object</button>
+                    </div>
                 </div>
-
-                <div class="mb-3">
-                    <label for="touristObject2" class="form-label">Tourist Object 2</label>
-                    <select class="form-select" id="touristObject2" name="TouristObjectIds[1]">
-                        <option value="">Select a Tourist Object</option>
-                        @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
-                        {
-                            <option value="@obj.Id">@obj.Name</option>
-                        }
-                    </select>
-                    <span class="text-danger" asp-validation-for="TripRouteTouristObjects[1]"></span>
+                <div class="col-6">
+                    <div id="routeMap" style="height: 400px; width: 100%;"></div>
                 </div>
             </div>
-
-            <div class="mb-3">
-                <button type="button" class="btn btn-secondary" id="addObjectButton">Add Another Tourist Object</button>
-            </div>
-
             <div class="mb-3">
                 <button class="btn btn-primary" type="submit">Submit</button>
             </div>
@@ -64,19 +69,143 @@
 
             const newDiv = document.createElement('div');
             newDiv.classList.add('mb-3');
-            newDiv.innerHTML = `
-                        <label for="touristObject${objectIndex}" class="form-label">Tourist Object ${objectIndex}</label>
-                        <select class="form-select" id="touristObject${objectIndex}" name="TouristObjectIds[${objectIndex - 1}]">
-                            <option value="">Select a Tourist Object</option>
-        @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
-        {
-                                    <option value="@obj.Id">@obj.Name</option>
-        }
-                        </select>
-                        <span class="text-danger" asp-validation-for="TouristObjectIds[${objectIndex - 1}]"></span>
-                    `;
+            newDiv.innerHTML = 
+                `<label for="touristObject${objectIndex}" class="form-label">Tourist Object ${objectIndex}</label>
+                <select class="form-select" id="touristObject${objectIndex}" name="TouristObjectIds[${objectIndex - 1}]">
+                    <option value="">Select a Tourist Object</option>
+                    @foreach (var obj in (IEnumerable<TouristObject>)ViewBag.TouristObjects)
+                    {
+                        <option value="@obj.Id" data-lat="@obj.Latitude" data-lng="@obj.Longitude">@obj.Name</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="TouristObjectIds[${objectIndex - 1}]"></span>`;
 
             container.appendChild(newDiv);
+        });
+
+        let waypoints = [];
+
+        function initRouteMap() {
+            const map = new google.maps.Map(document.getElementById("routeMap"), {
+                center: { lat: 50.4501, lng: 30.5234 },
+                zoom: 10,
+                mapId: "4504f8b37365c3d0",
+            });
+
+            window.routeMap = map;
+            window.directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true
+            });
+        }
+
+        function updateRouteMap() {
+            if (window.directionsRenderer) {
+                window.directionsRenderer.setMap(null);
+            }
+
+            if (window.markers) {
+                window.markers.forEach(marker => marker.setMap(null));
+            }
+
+            window.markers = [];
+
+            if (waypoints.length < 2) return;
+
+            const directionsService = new google.maps.DirectionsService();
+            window.directionsRenderer = new google.maps.DirectionsRenderer({
+                map: window.routeMap,
+                suppressMarkers: true
+            });
+
+            const origin = waypoints[0];
+            const destination = waypoints[waypoints.length - 1];
+            const waypointsForRequest = waypoints.slice(1, -1).map(wp => ({
+                location: new google.maps.LatLng(wp.lat, wp.lng),
+                stopover: true
+            }));
+
+            const request = {
+                origin: new google.maps.LatLng(origin.lat, origin.lng),
+                destination: new google.maps.LatLng(destination.lat, destination.lng),
+                waypoints: waypointsForRequest,
+                optimizeWaypoints: true,
+                travelMode: google.maps.TravelMode.WALKING
+            };
+
+            directionsService.route(request, function (result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    window.directionsRenderer.setDirections(result);
+
+                    const route = result.routes[0];
+                    route.waypoint_order.forEach((waypointIndex, i) => {
+                        const waypoint = waypoints[waypointIndex + 1];
+                        const marker = new google.maps.Marker({
+                            position: { lat: waypoint.lat, lng: waypoint.lng },
+                            map: window.routeMap,
+                            label: (i + 2).toString(),
+                            title: `Point ${i + 2}`
+                        });
+                        window.markers.push(marker);
+                    });
+
+                    const startMarker = new google.maps.Marker({
+                        position: { lat: origin.lat, lng: origin.lng },
+                        map: window.routeMap,
+                        label: '1',
+                        title: 'Start Point'
+                    });
+                    window.markers.push(startMarker);
+
+                    const endMarker = new google.maps.Marker({
+                        position: { lat: destination.lat, lng: destination.lng },
+                        map: window.routeMap,
+                        label: waypoints.length.toString(),
+                        title: 'End Point'
+                    });
+                    window.markers.push(endMarker);
+                }
+            });
+        }
+
+        function handleTouristObjectChange() {
+            waypoints = [];
+            document.querySelectorAll('select[name^="TouristObjectIds"]').forEach((select, index) => {
+                const selectedOption = select.options[select.selectedIndex];
+                const lat = selectedOption.getAttribute('data-lat');
+                const lng = selectedOption.getAttribute('data-lng');
+
+                if (lat && lng) {
+                    waypoints.push({
+                        lat: parseFloat(lat.replace(',', '.')),
+                        lng: parseFloat(lng.replace(',', '.')),
+                        label: (index + 1).toString()
+                    });
+                }
+            });
+
+            updateRouteMap();
+        }
+
+        function convertCoordinates() {
+            document.querySelectorAll('select[name^="TouristObjectIds"] option:selected').forEach((option) => {
+                option.setAttribute('data-lat', option.getAttribute('data-lat').replace(',', '.'));
+                option.setAttribute('data-lng', option.getAttribute('data-lng').replace(',', '.'));
+            });
+        }
+
+        (function loadGoogleMapsAPI() {
+            const script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey&callback=initRouteMap';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+
+        document.addEventListener('change', function (event) {
+            if (event.target.matches('select[name^="TouristObjectIds"]')) {
+                handleTouristObjectChange();
+            }
         });
     </script>
 }
