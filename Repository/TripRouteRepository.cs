@@ -16,8 +16,8 @@ namespace TripGuide.Repository
         public TripRoute Add(TripRoute tripRoute)
         {
             _dbContext.TripRoutes.Add(tripRoute);
-            _dbContext.SaveChanges(); // Сохраняем маршрут сразу после добавления
-            return tripRoute; // Возвращаем добавленный маршрут с уже установленным Id
+            _dbContext.SaveChanges();
+            return tripRoute;
         }
 
         public bool Delete(Guid id)
