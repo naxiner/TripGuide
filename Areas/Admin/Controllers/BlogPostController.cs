@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using TripGuide.Data;
 using TripGuide.Models;
+using TripGuide.Models.ViewModels;
 using TripGuide.Repositories;
 using TripGuide.Repository;
 using TripGuide.Utility;
@@ -41,7 +42,7 @@ namespace TripGuide.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("List");
         }
 
         public IActionResult Create()
@@ -190,10 +191,27 @@ namespace TripGuide.Controllers
             return RedirectToAction("List");
         }
 
-        public IActionResult List()
+        public IActionResult List(int pageNumber = 1)
         {
-            var blogPosts = blogPostRepository.GetAll();
-            return View(blogPosts);
+            int pageSize = 5;
+            var allBlogPosts = blogPostRepository.GetAll().ToList();
+
+            int totalBlogPosts = allBlogPosts.Count();
+            int totalPages = (int)Math.Ceiling(totalBlogPosts / (double)pageSize);
+
+            var pagedBlogPosts = allBlogPosts
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new BlogPostViewModel
+            {
+                BlogPosts = pagedBlogPosts,
+                PageNumber = pageNumber,
+                TotalPages = totalPages
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet("api/blogpost/route/{id}")]

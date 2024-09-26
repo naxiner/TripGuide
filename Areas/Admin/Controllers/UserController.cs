@@ -22,7 +22,7 @@ namespace TripGuide.Areas.Admin.Controllers
             _userRepository = userRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
         {
             var users = await _userRepository.GetAllAsync();
             if (users == null)
@@ -47,7 +47,23 @@ namespace TripGuide.Areas.Admin.Controllers
                 });
             }
 
-            return View(userRolesViewModels);
+            // Постраничный вывод
+            int totalUsers = userRolesViewModels.Count();
+            int totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+
+            var pagedUsers = userRolesViewModels
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new UserViewModel
+            {
+                Users = pagedUsers,
+                PageNumber = pageNumber,
+                TotalPages = totalPages
+            };
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Update(string id)

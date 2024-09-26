@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TripGuide.Data;
 using TripGuide.Models;
+using TripGuide.Models.ViewModels;
 using TripGuide.Repositories;
 using TripGuide.Repository;
 using TripGuide.Utility;
@@ -35,7 +36,7 @@ namespace TripGuide.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("List");
         }
 
         public IActionResult Create()
@@ -148,10 +149,27 @@ namespace TripGuide.Controllers
             return RedirectToAction("List");
         }
 
-        public IActionResult List()
+        public IActionResult List(int pageNumber = 1)
         {
-            var tripRoutes = tripRouteRepository.GetAll();
-            return View(tripRoutes);
+            int pageSize = 5;
+            var allTripRoutes = tripRouteRepository.GetAll().ToList();
+
+            int totalTripRoutes = allTripRoutes.Count();
+            int totalPages = (int)Math.Ceiling(totalTripRoutes / (double)pageSize);
+
+            var pagedTripRoutes = allTripRoutes
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new TripRouteViewModel
+            {
+                TripRoutes = pagedTripRoutes,
+                PageNumber = pageNumber,
+                TotalPages = totalPages
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet("api/route/{id}")]

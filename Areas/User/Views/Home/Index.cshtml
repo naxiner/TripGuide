@@ -16,7 +16,7 @@
             </p>
         </div>
         <div class="col-12 col-lg-6">
-            <img src="https://res.cloudinary.com/dyhivdtqr/image/upload/v1723800767/bddkd3id9p3cp4klvhr9.png"
+            <img src="https://res.cloudinary.com/dyhivdtqr/image/upload/v1726337632/ic8wg2hzi4burhpenxb1.png"
                  class="d-block mx-lg-auto img-fluid" width="400" />
         </div>
     </div>
@@ -106,6 +106,31 @@
                         </div>
                     </div>
                 }
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @if (Model.HasPreviousPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?pageNumber=@(Model.PageNumber - 1)">Previous</a>
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                                <a class="page-link" href="?pageNumber=@i">@i</a>
+                            </li>
+                        }
+
+                        @if (Model.HasNextPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?pageNumber=@(Model.PageNumber + 1)">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
             }
             else
             {
