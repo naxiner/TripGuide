@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 using TripGuide.Models;
+using TripGuide.Models.ViewModels;
 using TripGuide.Repositories;
 using TripGuide.Utility;
 
@@ -26,7 +27,7 @@ namespace TripGuide.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("List");
         }
 
         public IActionResult Create()
@@ -111,11 +112,31 @@ namespace TripGuide.Controllers
             return RedirectToAction("List");
         }
 
-        public IActionResult List()
+        public IActionResult List(int pageNumber = 1)
         {
-            var touristObjects = _touristObjectRepository.GetAll();
-            return View(touristObjects);
+            int pageSize = 5; // Define your desired page size
+            var allTouristObjects = _touristObjectRepository.GetAll().ToList();
+
+            // Calculate the total number of tourist objects
+            int totalTouristObjects = allTouristObjects.Count();
+            int totalPages = (int)Math.Ceiling(totalTouristObjects / (double)pageSize);
+
+            // Fetch the paginated list of tourist objects
+            var pagedTouristObjects = allTouristObjects
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new TouristObjectViewModel
+            {
+                TouristObjects = pagedTouristObjects,
+                PageNumber = pageNumber,
+                TotalPages = totalPages
+            };
+
+            return View(viewModel); // Return the view model instead of the list
         }
+
 
         private void ValidateTouristObject()
         {
