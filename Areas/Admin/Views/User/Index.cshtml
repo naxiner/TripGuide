@@ -1,4 +1,4 @@
-﻿@model IEnumerable<UserRolesViewModel>
+﻿@model TripGuide.Models.ViewModels.UserViewModel
 
 <div>
     <div class="bg-secondary bg-opacity-10 py-2 mb-5">
@@ -28,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model)
+                @foreach (var user in Model.Users)
                 {
                     <tr>
                         <td>@user.UserId</td>
@@ -86,6 +86,29 @@
                 }
             </tbody>
         </table>
+
+        <nav aria-label="User pagination">
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)">Previous</a>
+                    </li>
+                }
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@i">@i</a>
+                    </li>
+                }
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 </div>
 
