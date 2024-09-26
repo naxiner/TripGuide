@@ -51,12 +51,24 @@ namespace TripGuide.Controllers
             _userBlogPostRepository = userBlogPostRepository;   
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int pageNumber = 1)
         {
+            int pageSize = 3;
+            var allBlogs = _blogPostRepository.GetAll().ToList();
+
+            var pagedBlogs = allBlogs
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var totalPages = (int)Math.Ceiling(allBlogs.Count() / (double)pageSize);
+
             var viewModel = new HomeViewModel
             {
-                Blogs = _blogPostRepository.GetAll().ToList(),
-                Tags = _tagRepository.GetAll().ToList()
+                Blogs = pagedBlogs,
+                Tags = _tagRepository.GetAll().ToList(),
+                PageNumber = pageNumber,
+                TotalPages = totalPages
             };
 
             return View(viewModel);

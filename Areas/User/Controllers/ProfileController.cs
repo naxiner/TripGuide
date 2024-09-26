@@ -35,19 +35,30 @@ namespace TripGuide.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
             string userId = _userManager.GetUserId(User);
             var user = await _userRepository.GetAsync(userId);
 
             var collections = _userBlogPostRepository.GetAllUserBlogs(userId);
-            var reviews = _reviewRepository.GetAllByUserId(userId);
+
+            int pageSize = 3;
+            var allReviews = _reviewRepository.GetAllByUserId(userId);
+            var totalReviews = allReviews.Count();
+            var totalPages = (int)Math.Ceiling(totalReviews / (double)pageSize);
+
+            var pagedReviews = allReviews
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
             var model = new UserProfileViewModel
             {
                 User = user,
                 Collections = collections.ToList(),
-                Reviews = reviews.ToList()
+                Reviews = pagedReviews,
+                PageNumber = pageNumber,
+                TotalPages = totalPages
             };
 
             return View(model);

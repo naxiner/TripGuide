@@ -1,9 +1,8 @@
 ﻿namespace TripGuide.Models.ViewModels
 {
-    public class HomeViewModel
+    public class BlogPostViewModel
     {
-        public List<BlogPost> Blogs { get; set; }
-        public List<Tag> Tags { get; set; }
+        public IEnumerable<BlogPost> BlogPosts { get; set; }
         public int PageNumber { get; set; }
         public int TotalPages { get; set; }
 
