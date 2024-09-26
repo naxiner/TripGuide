@@ -114,14 +114,12 @@ namespace TripGuide.Controllers
 
         public IActionResult List(int pageNumber = 1)
         {
-            int pageSize = 5; // Define your desired page size
+            int pageSize = 5;
             var allTouristObjects = _touristObjectRepository.GetAll().ToList();
 
-            // Calculate the total number of tourist objects
             int totalTouristObjects = allTouristObjects.Count();
             int totalPages = (int)Math.Ceiling(totalTouristObjects / (double)pageSize);
 
-            // Fetch the paginated list of tourist objects
             var pagedTouristObjects = allTouristObjects
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -134,7 +132,7 @@ namespace TripGuide.Controllers
                 TotalPages = totalPages
             };
 
-            return View(viewModel); // Return the view model instead of the list
+            return View(viewModel);
         }
 
 
