@@ -1,10 +1,11 @@
-﻿@model IEnumerable<TouristObject>
+﻿@model TripGuide.Models.ViewModels.TouristObjectViewModel
 
 <div class="bg-secondary bg-opacity-10 py-2 mb-5">
     <div class="container">
         <h1>Tourist Objects</h1>
     </div>
 </div>
+
 <div>
     <div class="pb-3">
         <a class="btn btn-primary" asp-area="Admin" asp-controller="TouristObject" asp-action="Create">
@@ -13,7 +14,7 @@
     </div>
 </div>
 
-@if (Model != null && Model.Any())
+@if (Model.TouristObjects != null && Model.TouristObjects.Any())
 {
     <div class="container">
         <table class="table">
@@ -22,15 +23,16 @@
                     <td>Id</td>
                     <td>Name</td>
                     <td></td>
+                    <td></td>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var touristObject in Model)
+                @foreach (var touristObject in Model.TouristObjects)
                 {
                     <tr>
                         <td>@touristObject.Id</td>
                         <td>@touristObject.Name</td>
-                        <td><a href="@Url.Action("Update", "TouristObject", new { id = touristObject.Id })">View</a></td>
+                        <td><a asp-action="Update" asp-route-id="@touristObject.Id">View</a></td>
                         <td>
                             <form asp-action="Delete" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="@touristObject.Id" />
@@ -41,11 +43,34 @@
                 }
             </tbody>
         </table>
+
+        <nav aria-label="Tourist Object pagination">
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="List" asp-route-pageNumber="@(Model.PageNumber - 1)">Previous</a>
+                    </li>
+                }
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="List" asp-route-pageNumber="@i">@i</a>
+                    </li>
+                }
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="List" asp-route-pageNumber="@(Model.PageNumber + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 }
 else
 {
     <div class="container">
-        <p>No blog posts were found!</p>
+        <p>No tourist objects were found!</p>
     </div>
 }
