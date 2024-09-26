@@ -8,7 +8,7 @@
 
 <div>
     <div class="container">
-        <form asp-action="Add" method="post">
+        <form asp-action="Add" method="post" onsubmit="convertCoordinates()">
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
                 <input type="text" required class="form-control" id="name" asp-for="Name">
@@ -74,7 +74,7 @@
 
                             document.getElementById("latitude").addEventListener("input", updateMarkerPosition);
                             document.getElementById("longitude").addEventListener("input", updateMarkerPosition);
-                          
+
                             marker.addListener("dragend", updateInputFields);
                         }
 
@@ -91,16 +91,16 @@
 
                         function updateInputFields() {
                             const position = marker.position;
-                            document.getElementById("latitude").value = position.lat.toFixed(15).replace('.', ',');
-                            document.getElementById("longitude").value = position.lng.toFixed(15).replace('.', ',');
+                            document.getElementById("latitude").value = position.lat.toFixed(15).replace(',', '.');
+                            document.getElementById("longitude").value = position.lng.toFixed(15).replace(',', '.');
                         }
 
                         function convertCoordinates() {
                             const latInput = document.getElementById("latitude");
                             const lngInput = document.getElementById("longitude");
 
-                            latInput.value = latInput.value.replace(',', '.');
-                            lngInput.value = lngInput.value.replace(',', '.');
+                            latInput.value = latInput.value.replace('.', ',');
+                            lngInput.value = lngInput.value.replace('.', ',');
                         }
 
                         initMap();
@@ -114,11 +114,11 @@
 
 @section Scripts {
     <script>
-        document.getElementById("latitude").addEventListener("input", function() {
+        document.getElementById("latitude").addEventListener("input", function () {
             this.value = this.value.replace(",", ".");
         });
 
-        document.getElementById("longitude").addEventListener("input", function() {
+        document.getElementById("longitude").addEventListener("input", function () {
             this.value = this.value.replace(",", ".");
         });
     </script>

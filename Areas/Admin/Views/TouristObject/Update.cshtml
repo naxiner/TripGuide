@@ -8,7 +8,7 @@
 
 <div>
     <div class="container">
-        <form method="post">
+        <form asp-action="Update" method="post" onsubmit="convertCoordinates()">
             <input asp-for="Id" hidden />
 
             <div class="mb-3">
@@ -99,16 +99,16 @@
 
                         function updateInputFields() {
                             const position = marker.position;
-                            document.getElementById("latitude").value = position.lat.toFixed(15).replace('.', ',');
-                            document.getElementById("longitude").value = position.lng.toFixed(15).replace('.', ',');
+                            document.getElementById("latitude").value = position.lat.toFixed(15).replace(',', '.');
+                            document.getElementById("longitude").value = position.lng.toFixed(15).replace(',', '.');
                         }
 
                         function convertCoordinates() {
                             const latInput = document.getElementById("latitude");
                             const lngInput = document.getElementById("longitude");
 
-                            latInput.value = latInput.value.replace(',', '.');
-                            lngInput.value = lngInput.value.replace(',', '.');
+                            latInput.value = latInput.value.replace('.', ',');
+                            lngInput.value = lngInput.value.replace('.', ',');
                         }
 
                         initMap();
@@ -122,6 +122,19 @@
 
 @section Scripts {
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let latInput = document.getElementById("latitude");
+            let lngInput = document.getElementById("longitude");
+
+            if (latInput.value.includes(",")) {
+                latInput.value = latInput.value.replace(",", ".");
+            }
+
+            if (lngInput.value.includes(",")) {
+                lngInput.value = lngInput.value.replace(",", ".");
+            }
+        });
+
         document.getElementById("latitude").addEventListener("input", function () {
             this.value = this.value.replace(",", ".");
         });
